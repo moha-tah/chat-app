@@ -9,7 +9,7 @@ import java.util.Set;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // because your database uses integer primary key
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "first_name", nullable = false)
@@ -18,7 +18,7 @@ public class User {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "email", nullable = false, unique = true) // assuming emails should be unique
+    @Column(name = "email", nullable = false, unique = true)
     private String email;
 
     @Column(name = "password_hash", nullable = false)
@@ -30,7 +30,7 @@ public class User {
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin;
 
-    @OneToMany(mappedBy = "creator") // chats created by this user
+    @OneToMany(mappedBy = "creator")
     private Set<Chat> createdChats = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -128,9 +128,10 @@ public class User {
         invitations.add(invitation);
     }
 
-    // If you want to add a user directly to a chat, you'd create an invitation first
+    // If you want to add a user directly to a chat, you'd create an invitation
+    // first
     public void inviteUserToChat(Invitation invitation) {
         invitations.add(invitation);
-        invitation.getChat().getInvitations().add(invitation);  // Update the reverse side of the relationship
+        invitation.getChat().getInvitations().add(invitation); // Update the reverse side of the relationship
     }
 }

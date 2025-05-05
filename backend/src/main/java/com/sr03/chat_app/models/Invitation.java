@@ -5,17 +5,16 @@ import jakarta.persistence.*;
 @Entity
 @Table(name = "invitations")
 public class Invitation {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @ManyToOne
-    @JoinColumn(name = "chat", nullable = false)
+    @JoinColumn(name = "chat_id", nullable = false)
     private Chat chat;
 
     @ManyToOne
-    @JoinColumn(name = "user", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     // === Constructors ===

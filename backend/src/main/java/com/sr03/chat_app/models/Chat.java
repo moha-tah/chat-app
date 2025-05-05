@@ -16,37 +16,35 @@ public class Chat {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 4095)
     private String description;
 
-    @Column(name = "date_time", nullable = false)
-    private LocalDateTime dateTime;
+    @Column(name = "date", nullable = false)
+    private LocalDateTime date;
 
-    @Column(name = "duration_minutes", nullable = false)
-    private int durationMinutes;
+    @Column(name = "duration", nullable = false)
+    private int duration;
 
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<Invitation> invitations = new HashSet<>(); // Replaces the ManyToMany
+    private Set<Invitation> invitations = new HashSet<>();
 
     // No-argument constructor required by JPA
     public Chat() {
     }
 
-    // Constructor with parameters
-    public Chat(String title, String description, LocalDateTime dateTime, int durationMinutes, User creator) {
+    public Chat(String title, String description, LocalDateTime date, int duration, User creator) {
         this.id = UUID.randomUUID().toString();
         this.title = title;
         this.description = description;
-        this.dateTime = dateTime;
-        this.durationMinutes = durationMinutes;
+        this.date = date;
+        this.duration = duration;
         this.creator = creator;
     }
-
-    // Getters and Setters
+    
     public String getId() {
         return id;
     }
@@ -67,20 +65,20 @@ public class Chat {
         this.description = description;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
+    public LocalDateTime getDate() {
+        return date;
     }
 
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
+    public void setDate(LocalDateTime dateTime) {
+        this.date = dateTime;
     }
 
-    public int getDurationMinutes() {
-        return durationMinutes;
+    public int getDuration() {
+        return duration;
     }
 
-    public void setDurationMinutes(int durationMinutes) {
-        this.durationMinutes = durationMinutes;
+    public void setDuration(int durationMinutes) {
+        this.duration = durationMinutes;
     }
 
     public User getCreator() {

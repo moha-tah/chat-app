@@ -2,22 +2,24 @@ package com.sr03.chat_app.controllers;
 
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.repositories.UserRepository;
+import com.sr03.chat_app.utils.Utils;
+import com.sr03.chat_app.dtos.CreateUserDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
-
 @RequestMapping("/api/users")
 public class UserController {
 
     @Autowired
     private UserRepository userRepository;
 
-    // Create a new user
-    @PostMapping("/create")
-    public User createUser(@RequestBody User user) {
+    @PostMapping()
+    public User addUser(@RequestBody CreateUserDto createUserDto) {
+        User user = createUser(createUserDto);
         return userRepository.save(user);
     }
 
@@ -27,9 +29,15 @@ public class UserController {
         return userRepository.findAll();
     }
 
+    private User createUser(CreateUserDto createUserDto) {
+        String passwordSalt = UUID.randomUUID().toString();
+        String passwordHash = Utils.hashPassword(createUserDto.getPassword(), passwordSalt);
+
+        return new User(
+                createUserDto.getLastName(),
+                createUserDto.getFirstName(),
+                createUserDto.getEmail(),
+                passwordHash,
+                createUserDto.getIsAdmin());
+    }
 }
-
-
-
-
-
