@@ -1,0 +1,35 @@
+package com.sr03.chat_app.controllers;
+
+import com.sr03.chat_app.models.Chat;
+import com.sr03.chat_app.repositories.ChatRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/chats")
+public class ChatController {
+
+    @Autowired
+    private ChatRepository chatRepository;
+
+    // Create a new Chat
+    @PostMapping("/create")
+    public Chat createUser(@RequestBody Chat Chat) {
+        return chatRepository.save(Chat);
+    }
+
+    // Get all Chats
+    @GetMapping
+    public List<Chat> getAllChats() {
+        return chatRepository.findAll();
+    }
+
+}
+
+
+
+
+
+
