@@ -42,7 +42,7 @@ public class UserService {
     }
 
     public User getUserById(int id) {
-        return getUserOrThrow(id);
+        return getUserOrNull(id);
     }
 
     public void deleteUser(int id) {
@@ -88,6 +88,10 @@ public class UserService {
         if (!userRepository.existsById(id)) {
             throw new IllegalArgumentException("L'utilisateur avec l'ID " + id + " n'existe pas.");
         }
+    }
+
+    private User getUserOrNull(int id) {
+        return userRepository.findById(id).orElse(null);
     }
 
     private User getUserOrThrow(int id) {
