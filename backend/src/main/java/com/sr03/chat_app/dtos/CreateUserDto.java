@@ -5,7 +5,6 @@ public class CreateUserDto {
     private String lastName;
     private String email;
     private String password;
-    private boolean isAdmin;
 
     public String getFirstName() {
         return firstName;
@@ -21,9 +20,5 @@ public class CreateUserDto {
 
     public String getPassword() {
         return password;
-    }
-
-    public boolean getIsAdmin() {
-        return isAdmin;
     }
 }

@@ -19,8 +19,7 @@ public class UserController {
 
     @PostMapping()
     public User addUser(@RequestBody CreateUserDto createUserDto) {
-        User user = createUser(createUserDto);
-        return userRepository.save(user);
+        return createUser(createUserDto);
     }
 
     // Get all users
@@ -30,6 +29,20 @@ public class UserController {
     }
 
     private User createUser(CreateUserDto createUserDto) {
+        // Check the strength of the password
+        if (!Utils.isPasswordStrong(createUserDto.getPassword())) {
+            throw new IllegalArgumentException(
+                    "Password must be at least " + Utils.MIN_PASSWORD_LENGTH
+                            + " characters long and must contains with " + Utils.MIN_SPECIAL_CHARACTERS
+                            + " special characters, " + Utils.MIN_NUMBERS + " numbers and "
+                            + Utils.MIN_UPPERCASE_LETTERS + " uppercase letters.");
+        }
+
+        // Check if a user with this email already exists
+        if (userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("A user with this email already exists");
+        }
+
         String passwordSalt = UUID.randomUUID().toString();
         String passwordHash = Utils.hashPassword(createUserDto.getPassword(), passwordSalt);
 
@@ -39,7 +52,7 @@ public class UserController {
                 createUserDto.getEmail(),
                 passwordHash,
                 passwordSalt,
-                createUserDto.getIsAdmin());
+                false);
 
         return userRepository.save(user);
     }
