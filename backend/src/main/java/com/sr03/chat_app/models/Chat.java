@@ -6,12 +6,12 @@ import java.util.*;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "chats")
+@Table(name = "chat")
 public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private int id;
 
     @Column(nullable = false)
     private String title;
@@ -36,9 +36,8 @@ public class Chat {
     public Chat() {
     }
 
-    // Constructor with parameters
+    //Constructor with parameters
     public Chat(String title, String description, LocalDateTime dateTime, int durationMinutes, User creator) {
-        this.id = UUID.randomUUID().toString();
         this.title = title;
         this.description = description;
         this.dateTime = dateTime;
@@ -47,7 +46,7 @@ public class Chat {
     }
 
     // Getters and Setters
-    public String getId() {
+    public int getId() {
         return id;
     }
 
@@ -83,8 +82,14 @@ public class Chat {
         this.durationMinutes = durationMinutes;
     }
 
+    public void setCreator(User creator) {
+        this.creator = creator;
+    }
+
+
     public User getCreator() {
-        return creator;
+
+        return this.creator;
     }
 
     public Set<Invitation> getInvitations() {
@@ -97,3 +102,12 @@ public class Chat {
         user.getInvitations().add(invitation); // Add to the user's invitations too
     }
 }
+
+
+
+
+
+
+
+
+

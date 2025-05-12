@@ -38,3 +38,5 @@ public class InvitationController {
         return invitationRepository.findAll();
     }
 }
+
+

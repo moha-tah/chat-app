@@ -3,10 +3,11 @@ package com.sr03.chat_app.models;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "invitations")
+@Table(name = "invitation")
 public class Invitation {
 
     @Id
+    @Column(name = "invitation")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
