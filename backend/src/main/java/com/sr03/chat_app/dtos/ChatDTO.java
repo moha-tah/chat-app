@@ -1,4 +1,4 @@
-package com.sr03.chat_app.dto;
+package com.sr03.chat_app.dtos;
 
 import java.time.LocalDateTime;
 

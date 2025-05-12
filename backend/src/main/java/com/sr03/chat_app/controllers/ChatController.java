@@ -1,6 +1,6 @@
 package com.sr03.chat_app.controllers;
 
-import com.sr03.chat_app.dto.ChatDTO;
+import com.sr03.chat_app.dtos.ChatDTO;
 import com.sr03.chat_app.models.Chat;
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.repositories.ChatRepository;
