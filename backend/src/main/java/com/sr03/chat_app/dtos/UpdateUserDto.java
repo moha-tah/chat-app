@@ -1,6 +1,6 @@
 package com.sr03.chat_app.dtos;
 
-public class CreateUserDto {
+public class UpdateUserDto {
     private String firstName;
     private String lastName;
     private String email;

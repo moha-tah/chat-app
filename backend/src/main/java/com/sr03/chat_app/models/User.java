@@ -27,8 +27,11 @@ public class User {
     @Column(name = "password_salt", nullable = false)
     private String passwordSalt;
 
+    @Column(name = "is_active", nullable = false)
+    private boolean isActive = true;
+
     @Column(name = "is_admin", nullable = false)
-    private boolean isAdmin;
+    private boolean isAdmin = false;
 
     @OneToMany(mappedBy = "creator")
     private Set<Chat> createdChats = new HashSet<>();
@@ -100,6 +103,14 @@ public class User {
 
     public void setPasswordSalt(String passwordSalt) {
         this.passwordSalt = passwordSalt;
+    }
+
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean isActive) {
+        this.isActive = isActive;
     }
 
     public boolean isAdmin() {
