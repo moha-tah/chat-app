@@ -1,17 +1,16 @@
 package com.sr03.chat_app.utils;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Repository;
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
 
 @Repository
 public class Utils {
-    private static final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-
     public static String hashPassword(String password, String salt) {
-        return passwordEncoder.encode(password + salt);
+        return BCrypt.withDefaults().hashToString(12, (password + salt).toCharArray());
     }
 
     public static boolean verifyPassword(String password, String salt, String hashedPassword) {
-        return passwordEncoder.matches(password + salt, hashedPassword);
+        return BCrypt.verifyer().verify((password + salt).toCharArray(), hashedPassword.toCharArray()).verified;
     }
 }

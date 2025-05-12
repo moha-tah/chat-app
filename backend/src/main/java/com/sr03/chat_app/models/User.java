@@ -42,11 +42,13 @@ public class User {
         // No-arg constructor needed by JPA
     }
 
-    public User(String lastName, String firstName, String email, String passwordHash, boolean isAdmin) {
+    public User(String lastName, String firstName, String email, String passwordHash, String passwordSalt,
+            boolean isAdmin) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.email = email;
         this.passwordHash = passwordHash;
+        this.passwordSalt = passwordSalt;
         this.isAdmin = isAdmin;
     }
 

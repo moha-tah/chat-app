@@ -24,7 +24,7 @@ public class UserController {
     }
 
     // Get all users
-    @GetMapping
+    @GetMapping()
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
@@ -33,11 +33,14 @@ public class UserController {
         String passwordSalt = UUID.randomUUID().toString();
         String passwordHash = Utils.hashPassword(createUserDto.getPassword(), passwordSalt);
 
-        return new User(
+        User user = new User(
                 createUserDto.getLastName(),
                 createUserDto.getFirstName(),
                 createUserDto.getEmail(),
                 passwordHash,
+                passwordSalt,
                 createUserDto.getIsAdmin());
+
+        return userRepository.save(user);
     }
 }
