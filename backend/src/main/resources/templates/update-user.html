@@ -2,10 +2,10 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Page Admin - Application de Chat</title>
+    <title>Page Utilisateur - Application de Chat</title>
     <link rel="stylesheet" href="/styles.css">
-
 </head>
+
 <body>
 
 <header>
@@ -13,17 +13,17 @@
 </header>
 
 <nav>
-    <p>Gérer les utilisateurs | Gérer les forums</p>
+    <p>Forums disponibles | Mes abonnements</p>
 </nav>
 
 <aside>
     <h2>Informations</h2>
-    <p>Utilisateur connecté (Admin)</p>
+    <p th:text="'Bienvenue ' + ${id} + ' !'">Bienvenue !</p>
 </aside>
 
 <main>
     <h2>Contenu principal</h2>
-    <p>Bienvenue sur l'interface administrateur de l'application de chat.</p>
+    <p>Bienvenue sur l'interface utilisateur de l'application de chat.</p>
 </main>
 
 <footer>
