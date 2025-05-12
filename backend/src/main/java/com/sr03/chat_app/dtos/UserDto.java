@@ -1,10 +1,11 @@
 package com.sr03.chat_app.dtos;
 
-public class CreateUserDto {
+public class UserDto {
     private String firstName;
     private String lastName;
     private String email;
     private String password;
+    private boolean isActive;
     private boolean isAdmin;
 
     public String getFirstName() {
@@ -21,6 +22,10 @@ public class CreateUserDto {
 
     public String getPassword() {
         return password;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 
     public boolean isAdmin() {

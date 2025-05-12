@@ -6,8 +6,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sr03.chat_app.dtos.CreateUserDto;
-import com.sr03.chat_app.dtos.UpdateUserDto;
+import com.sr03.chat_app.dtos.UserDto;
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.repositories.UserRepository;
 import com.sr03.chat_app.utils.Utils;
@@ -18,7 +17,7 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public User addUser(CreateUserDto createUserDto) {
+    public User addUser(UserDto createUserDto) {
         checkPasswordStrength(createUserDto.getPassword());
 
         if (userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
@@ -48,18 +47,19 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public User updateUser(int id, UpdateUserDto updateUserDto) {
+    public User updateUser(int id, UserDto userDto) {
         User user = getUserOrThrow(id);
-        user.setLastName(updateUserDto.getLastName());
-        user.setFirstName(updateUserDto.getFirstName());
-        user.setEmail(updateUserDto.getEmail());
-        user.setAdmin(updateUserDto.isAdmin());
+        user.setLastName(userDto.getLastName());
+        user.setFirstName(userDto.getFirstName());
+        user.setEmail(userDto.getEmail());
+        user.setActive(userDto.isActive());
+        user.setAdmin(userDto.isAdmin());
 
-        if (updateUserDto.getPassword() != null) {
-            checkPasswordStrength(updateUserDto.getPassword());
+        if (userDto.getPassword() != null) {
+            checkPasswordStrength(userDto.getPassword());
 
             String passwordSalt = UUID.randomUUID().toString();
-            String passwordHash = Utils.hashPassword(updateUserDto.getPassword(), passwordSalt);
+            String passwordHash = Utils.hashPassword(userDto.getPassword(), passwordSalt);
             user.setPasswordHash(passwordHash);
             user.setPasswordSalt(passwordSalt);
         }

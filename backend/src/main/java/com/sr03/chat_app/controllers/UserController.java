@@ -2,8 +2,7 @@ package com.sr03.chat_app.controllers;
 
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.services.UserService;
-import com.sr03.chat_app.dtos.CreateUserDto;
-import com.sr03.chat_app.dtos.UpdateUserDto;
+import com.sr03.chat_app.dtos.UserDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +17,7 @@ public class UserController {
     private UserService userService;
 
     @PostMapping()
-    public User addUser(@RequestBody CreateUserDto createUserDto) {
+    public User addUser(@RequestBody UserDto createUserDto) {
         return userService.addUser(createUserDto);
     }
 
@@ -33,8 +32,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public User updateUser(@PathVariable int id, @RequestBody UpdateUserDto updateUserDto) {
-        return userService.updateUser(id, updateUserDto);
+    public User updateUser(@PathVariable int id, @RequestBody UserDto userDto) {
+        return userService.updateUser(id, userDto);
     }
 
     @PatchMapping("/{id}/activate")
