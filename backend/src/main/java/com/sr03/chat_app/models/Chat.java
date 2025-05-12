@@ -3,6 +3,9 @@ package com.sr03.chat_app.models;
 import java.time.LocalDateTime;
 import java.util.*;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -11,7 +14,7 @@ public class Chat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    private int id;
 
     @Column(nullable = false)
     private String title;
@@ -25,10 +28,12 @@ public class Chat {
     @Column(name = "duration", nullable = false)
     private int duration;
 
+    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Invitation> invitations = new HashSet<>();
 
@@ -37,15 +42,14 @@ public class Chat {
     }
 
     public Chat(String title, String description, LocalDateTime date, int duration, User creator) {
-        this.id = UUID.randomUUID().toString();
         this.title = title;
         this.description = description;
         this.date = date;
         this.duration = duration;
         this.creator = creator;
     }
-    
-    public String getId() {
+
+    public int getId() {
         return id;
     }
 
