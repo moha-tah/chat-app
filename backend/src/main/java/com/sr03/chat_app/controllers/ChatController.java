@@ -25,5 +25,4 @@ public class ChatController {
     public List<Chat> getAllChats() {
         return chatRepository.findAll();
     }
-
 }

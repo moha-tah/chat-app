@@ -13,7 +13,6 @@ import com.sr03.chat_app.utils.Utils;
 
 @Service
 public class UserService {
-
     @Autowired
     private UserRepository userRepository;
 
@@ -40,6 +39,10 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public User getUserById(int id) {
+        return getUserOrThrow(id);
     }
 
     public void deleteUser(int id) {

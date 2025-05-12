@@ -1,25 +1,34 @@
 package com.sr03.chat_app.controllers;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
+@RequestMapping("/admin")
 public class WebController {
 
-//    @Autowired
-//    private userdata userRepo; // Inject your repositories here
-
-    @GetMapping("/admin")
+    @GetMapping()
     public String adminPage() {
-        // Create a test user (just once – no duplication check here)
-//        User user = new User("Doe", "John", "john.doe@example.com", "password123", false);
-//        userRepo.save(user);
-
-        return "admin"; // returns admin.html
+        return "admin";
     }
 
-    @GetMapping("/user")
-    public String userPage() {
+    @GetMapping("/users")
+    public String usersPage() {
+        return "users";
+    }
+
+    @GetMapping("users/{id}")
+    public String userPage(@PathVariable int id, Model model) {
+        model.addAttribute("id", id);
         return "user";
+    }
+
+    @GetMapping("users/{id}/update")
+    public String updateUserPage(@PathVariable int id, Model model) {
+        model.addAttribute("id", id);
+        return "update-user";
     }
 }
