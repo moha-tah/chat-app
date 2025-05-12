@@ -4,6 +4,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const validationRulesContainer = document.getElementById(
     "password-validation-rules"
   );
+  const strengthContainer = document.getElementById(
+    "password-strength-container"
+  );
+  const strengthText = document.getElementById("password-strength-text");
+  const strengthBar = document.getElementById("password-strength-bar");
 
   const lengthCheck = document.getElementById("length-check");
   const uppercaseCheck = document.getElementById("uppercase-check");
@@ -21,41 +26,51 @@ document.addEventListener("DOMContentLoaded", function () {
   function validatePassword() {
     const password = passwordInput.value;
     let allConditionsMet = true;
+    let criteriaMetCount = 0;
 
-    // For the update form, if the password field is empty, it's considered valid (don't change password)
+    // For the update form, if the password field is empty, hide rules and strength, enable button
     if (isUpdateForm && password === "") {
       if (validationRulesContainer)
         validationRulesContainer.style.display = "none";
+      if (strengthContainer) strengthContainer.style.display = "none";
       updateValidationStatus(lengthCheck, false, true);
       updateValidationStatus(uppercaseCheck, false, true);
       updateValidationStatus(specialCheck, false, true);
       updateValidationStatus(numberCheck, false, true);
       if (submitButton) submitButton.disabled = false;
-      return true; // Allow submission if password field is empty on update form
+      updateStrengthIndicator(0);
+      return true;
     } else {
       if (validationRulesContainer)
         validationRulesContainer.style.display = "block";
+      if (strengthContainer) strengthContainer.style.display = "block";
     }
 
     const isLengthValid = password.length >= 13;
     updateValidationStatus(lengthCheck, isLengthValid);
-    if (!isLengthValid) allConditionsMet = false;
+    if (isLengthValid) criteriaMetCount++;
+    else allConditionsMet = false;
 
     const uppercaseMatches = password.match(/[A-Z]/g) || [];
     const isUppercaseValid = uppercaseMatches.length >= 2;
     updateValidationStatus(uppercaseCheck, isUppercaseValid);
-    if (!isUppercaseValid) allConditionsMet = false;
+    if (isUppercaseValid) criteriaMetCount++;
+    else allConditionsMet = false;
 
     const specialMatches =
       password.match(/[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/g) || [];
     const isSpecialValid = specialMatches.length >= 2;
     updateValidationStatus(specialCheck, isSpecialValid);
-    if (!isSpecialValid) allConditionsMet = false;
+    if (isSpecialValid) criteriaMetCount++;
+    else allConditionsMet = false;
 
     const numberMatches = password.match(/[0-9]/g) || [];
     const isNumberValid = numberMatches.length >= 3;
     updateValidationStatus(numberCheck, isNumberValid);
-    if (!isNumberValid) allConditionsMet = false;
+    if (isNumberValid) criteriaMetCount++;
+    else allConditionsMet = false;
+
+    updateStrengthIndicator(criteriaMetCount);
 
     if (submitButton) {
       submitButton.disabled = !allConditionsMet;
@@ -74,8 +89,55 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
+  function updateStrengthIndicator(count) {
+    if (!strengthText || !strengthBar) return;
+
+    let strengthLabel = "";
+    let barClass = "";
+    let barWidth = "0%";
+
+    switch (count) {
+      case 0:
+        strengthLabel = "Très faible";
+        barClass = "bg-danger";
+        barWidth = "10%";
+        break;
+      case 1:
+        strengthLabel = "Faible";
+        barClass = "bg-danger";
+        barWidth = "25%";
+        break;
+      case 2:
+        strengthLabel = "Moyen";
+        barClass = "bg-warning";
+        barWidth = "50%";
+        break;
+      case 3:
+        strengthLabel = "Fort";
+        barClass = "bg-info";
+        barWidth = "75%";
+        break;
+      case 4:
+        strengthLabel = "Très fort";
+        barClass = "bg-success";
+        barWidth = "100%";
+        break;
+      default:
+        strengthLabel = "";
+        barClass = "";
+        barWidth = "0%";
+    }
+
+    strengthText.textContent = strengthLabel;
+    strengthBar.style.width = barWidth;
+    strengthBar.className = "progress-bar";
+    if (barClass) {
+      strengthBar.classList.add(barClass);
+    }
+  }
+
   if (passwordInput) {
-    validatePassword(); // Initial validation check
+    validatePassword();
     passwordInput.addEventListener("input", validatePassword);
   } else if (submitButton) {
     submitButton.disabled = false;
