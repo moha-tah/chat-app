@@ -1,5 +1,6 @@
 package com.sr03.chat_app.controllers;
 
+import com.sr03.chat_app.dtos.InvitationDto;
 import com.sr03.chat_app.models.Chat;
 import com.sr03.chat_app.models.Invitation;
 import com.sr03.chat_app.models.User;
@@ -25,9 +26,9 @@ public class InvitationController {
     private UserRepository userRepository;
 
     @PostMapping
-    public Invitation createInvitation(@RequestParam String chatId, @RequestParam int userId) {
-        Chat chat = chatRepository.findById(chatId).orElseThrow();
-        User user = userRepository.findById(userId).orElseThrow();
+    public Invitation createInvitation(@RequestBody InvitationDto invitationDto) {
+        Chat chat = chatRepository.findById(invitationDto.getChatId()).orElseThrow();
+        User user = userRepository.findById(invitationDto.getUserId()).orElseThrow();
 
         Invitation invitation = new Invitation(chat, user);
         return invitationRepository.save(invitation);
@@ -36,5 +37,20 @@ public class InvitationController {
     @GetMapping
     public List<Invitation> getAllInvitations() {
         return invitationRepository.findAll();
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteInvitation(@PathVariable int id) {
+        invitationRepository.deleteById(id);
+    }
+
+    @GetMapping("/users/{id}/sent")
+    public List<Invitation> getInvitationsByUserIdSent(@PathVariable int id) {
+        return invitationRepository.findBySenderId(id);
+    }
+
+    @GetMapping("/users/{id}/received")
+    public List<Invitation> getInvitationsByUserIdReceived(@PathVariable int id) {
+        return invitationRepository.findByReceiverId(id);
     }
 }

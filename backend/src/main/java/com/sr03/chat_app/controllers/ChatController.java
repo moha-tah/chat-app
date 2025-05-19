@@ -16,7 +16,7 @@ public class ChatController {
 
     // Create a new Chat
     @PostMapping()
-    public Chat createUser(@RequestBody Chat chat) {
+    public Chat createChat(@RequestBody Chat chat) {
         return chatRepository.save(chat);
     }
 
