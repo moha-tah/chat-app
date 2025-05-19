@@ -64,7 +64,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private void handleAuthenticationResponse(WebSocketSession session, MessageSocket authMessage, ObjectMapper mapper)
             throws IOException {
         Integer userId = authMessage.getUserId();
-        Integer chatId = authMessage.getChatId(); // Assuming nameChat is the ID of the current chat context
+        Integer chatId = authMessage.getChatId();
 
         if (userId == null || chatId == null) {
             session.sendMessage(
