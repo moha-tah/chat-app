@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
@@ -24,9 +25,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Component
 public class WebSocketHandler extends TextWebSocketHandler {
 
-    private final Integer chatId;
     private final Logger logger = Logger.getLogger(WebSocketHandler.class.getName());
     private final List<WebSocketSession> sessions;
     private final List<MessageSocket> messageSocketsHistory;
@@ -41,8 +42,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
     private ChatRepository chatRepository;
     private final Map<String, Integer> authenticatedUsers = new HashMap<>(); // Session ID -> User ID
 
-    public WebSocketHandler(Integer chatId) {
-        this.chatId = chatId;
+    public WebSocketHandler(InvitationRepository invitationRepository,
+            UserRepository userRepository,
+            ChatRepository chatRepository) {
+        this.invitationRepository = invitationRepository;
+        this.userRepository = userRepository;
+        this.chatRepository = chatRepository;
         this.messageSocketsHistory = new ArrayList<>();
         this.sessions = new ArrayList<>();
     }
@@ -56,8 +61,27 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         if ("AUTH_RESPONSE".equals(receivedMessage.getType())) {
             handleAuthenticationResponse(session, receivedMessage, mapper);
-        } else {
+            return;
+        }
+
+        if (!authenticatedUsers.containsKey(session.getId())) {
+            logger.warn("Message reçu de la session non authentifiée " + session.getId() + ": "
+                    + receivedMessage.getMessage());
+            session.sendMessage(new TextMessage(
+                    mapper.writeValueAsString(Map.of("type", "ERROR", "message",
+                            "Authentification requise. Veuillez d'abord envoyer AUTH_RESPONSE."))));
+            return;
+        }
+
+        Integer authenticatedUserId = authenticatedUsers.get(session.getId());
+
+        logger.info("Message reçu de l'utilisateur " + authenticatedUserId + " (" + receivedMessage.getUserId() + "): "
+                + receivedMessage.getMessage());
+
+        if ("CHAT_MESSAGE".equals(receivedMessage.getType())) {
             handleChatMessage(session, receivedMessage);
+        } else {
+            handleUnknownMessage(session, receivedMessage);
         }
     }
 
@@ -72,16 +96,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
                             Map.of("type", "AUTH_FAILURE", "message",
                                     "L'ID utilisateur et l'ID du chat sont requis."))));
             session.close(CloseStatus.POLICY_VIOLATION.withReason("Données d'authentification invalides"));
-            sessions.remove(session);
-            return;
-        }
-
-        if (!chatId.equals(this.chatId)) {
-            session.sendMessage(
-                    new TextMessage(mapper.writeValueAsString(
-                            Map.of("type", "AUTH_FAILURE", "message",
-                                    "Tentative de rejoindre le mauvais salon de discussion."))));
-            session.close(CloseStatus.POLICY_VIOLATION.withReason("Mauvais salon de discussion"));
             sessions.remove(session);
             return;
         }
@@ -119,7 +133,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         session.sendMessage(
                 new TextMessage(mapper.writeValueAsString(
-                        Map.of("type", "AUTH_SUCCESS", "message", "Bienvenue " + authMessage.getUserId() + "!"))));
+                        Map.of("type", "AUTH_SUCCESS", "message",
+                                "Bienvenue à l'utilisateur " + authMessage.getUserId() + "!"))));
 
         // Send message history to the newly authenticated user
         for (MessageSocket historicalMessage : messageSocketsHistory) {
@@ -127,28 +142,31 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
 
         // Broadcast join message
-        broadcast(mapper.writeValueAsString(Map.of("type", "USER_JOIN", "user", authMessage.getUserId(), "message",
-                authMessage.getUserId() + " a rejoint le chat.")));
+        broadcast(mapper.writeValueAsString(Map.of("type", "USER_JOIN", "userId", authMessage.getUserId(), "message",
+                "L'utilisateur " + authMessage.getUserId() + " a rejoint le chat.")));
     }
 
     private void handleChatMessage(WebSocketSession session, MessageSocket chatMessage)
             throws IOException {
         ObjectMapper mapper = new ObjectMapper();
-        if (!authenticatedUsers.containsKey(session.getId())) {
-            logger.warn("Message reçu de la session non authentifiée " + session.getId() + ": "
-                    + chatMessage.getMessage());
-            session.sendMessage(new TextMessage(
-                    mapper.writeValueAsString(Map.of("type", "ERROR", "message",
-                            "Authentification requise. Veuillez d'abord envoyer AUTH_RESPONSE."))));
+
+        if (chatMessage.getChatId() == null) {
+            logger.warn("Message reçu de l'utilisateur " + chatMessage.getUserId() + " (session: " + session.getId()
+                    + ") sans chatId. Accès refusé.");
+            session.sendMessage(new TextMessage(mapper.writeValueAsString(
+                    Map.of("type", "ERROR", "message", "Chat ID requis."))));
             return;
         }
 
-        Integer authenticatedUserId = authenticatedUsers.get(session.getId());
-
-        logger.info("Message reçu de l'utilisateur " + authenticatedUserId + " (" + chatMessage.getUserId() + "): "
-                + chatMessage.getMessage());
         messageSocketsHistory.add(chatMessage); // Store the original MessageSocket
         broadcast(mapper.writeValueAsString(chatMessage)); // Broadcast the original MessageSocket
+    }
+
+    private void handleUnknownMessage(WebSocketSession session, MessageSocket unknownMessage) throws IOException {
+        logger.warn("Type de message inconnu reçu de l'utilisateur " + authenticatedUsers.get(session.getId()) + ": "
+                + unknownMessage.getType());
+        session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(
+                Map.of("type", "ERROR", "message", "Type de message inconnu: " + unknownMessage.getType()))));
     }
 
     @Override
@@ -168,17 +186,16 @@ public class WebSocketHandler extends TextWebSocketHandler {
         sessions.remove(session);
         Integer userId = authenticatedUsers.remove(session.getId());
         if (userId != null) {
-            logger.info("Utilisateur " + userId + " (session: " + session.getId() + ") déconnecté de " + this.chatId);
+            logger.info("Utilisateur " + userId + " (session: " + session.getId() + ") déconnecté.");
             try {
                 this.broadcast(new ObjectMapper().writeValueAsString(Map.of("type", "USER_LEAVE", "userId", userId,
                         "message", "L\'utilisateur " + userId + " est parti.")));
             } catch (IOException e) {
-                logger.error("Erreur lors de la diffusion du message de départ pour l'utilisateur " + userId
-                        + " dans le chat " + this.chatId, e);
+                logger.error("Erreur lors de la diffusion du message de départ pour l'utilisateur " + userId, e);
             }
         } else {
-            logger.info("Session " + session.getId() + " (non authentifiée) déconnectée de " + this.chatId
-                    + " avec le statut " + status.getCode());
+            logger.info("Session " + session.getId() + " (non authentifiée) déconnectée avec le statut "
+                    + status.getCode());
         }
     }
 
