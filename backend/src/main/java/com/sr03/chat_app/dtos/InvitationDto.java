@@ -1,10 +1,10 @@
 package com.sr03.chat_app.dtos;
 
 public class InvitationDto {
-    private String chatId;
+    private int chatId;
     private int userId;
 
-    public String getChatId() {
+    public int getChatId() {
         return chatId;
     }
 
@@ -12,7 +12,7 @@ public class InvitationDto {
         return userId;
     }
 
-    public void setChatId(String chatId) {
+    public void setChatId(int chatId) {
         this.chatId = chatId;
     }
 

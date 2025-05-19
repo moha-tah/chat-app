@@ -1,12 +1,9 @@
 package com.sr03.chat_app.controllers;
 
 import com.sr03.chat_app.dtos.InvitationDto;
-import com.sr03.chat_app.models.Chat;
 import com.sr03.chat_app.models.Invitation;
-import com.sr03.chat_app.models.User;
-import com.sr03.chat_app.repositories.ChatRepository;
-import com.sr03.chat_app.repositories.InvitationRepository;
-import com.sr03.chat_app.repositories.UserRepository;
+import com.sr03.chat_app.services.InvitationService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,40 +14,30 @@ import java.util.List;
 public class InvitationController {
 
     @Autowired
-    private InvitationRepository invitationRepository;
-
-    @Autowired
-    private ChatRepository chatRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    private InvitationService invitationService;
 
     @PostMapping
     public Invitation createInvitation(@RequestBody InvitationDto invitationDto) {
-        Chat chat = chatRepository.findById(invitationDto.getChatId()).orElseThrow();
-        User user = userRepository.findById(invitationDto.getUserId()).orElseThrow();
-
-        Invitation invitation = new Invitation(chat, user);
-        return invitationRepository.save(invitation);
+        return invitationService.createInvitation(invitationDto);
     }
 
     @GetMapping
     public List<Invitation> getAllInvitations() {
-        return invitationRepository.findAll();
+        return invitationService.getAllInvitations();
     }
 
     @DeleteMapping("/{id}")
     public void deleteInvitation(@PathVariable int id) {
-        invitationRepository.deleteById(id);
+        invitationService.deleteInvitation(id);
     }
 
-    @GetMapping("/users/{id}/sent")
+    @GetMapping("/users/{id}")
     public List<Invitation> getInvitationsByUserIdSent(@PathVariable int id) {
-        return invitationRepository.findBySenderId(id);
+        return invitationService.getInvitationsByUserIdSent(id);
     }
 
-    @GetMapping("/users/{id}/received")
-    public List<Invitation> getInvitationsByUserIdReceived(@PathVariable int id) {
-        return invitationRepository.findByReceiverId(id);
+    @GetMapping("/chats/{id}")
+    public List<Invitation> getInvitationsByChatId(@PathVariable int id) {
+        return invitationService.getInvitationsByChatId(id);
     }
 }
