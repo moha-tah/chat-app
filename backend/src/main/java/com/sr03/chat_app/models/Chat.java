@@ -26,7 +26,7 @@ public class Chat {
     private LocalDateTime date;
 
     @Column(name = "duration", nullable = false)
-    private int duration;
+    private int duration; // in minutes
 
     @JsonBackReference
     @ManyToOne

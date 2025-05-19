@@ -1,7 +1,9 @@
 package com.sr03.chat_app.controllers;
 
+import com.sr03.chat_app.dtos.ChatDto;
 import com.sr03.chat_app.models.Chat;
-import com.sr03.chat_app.repositories.ChatRepository;
+import com.sr03.chat_app.services.ChatService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,17 +14,25 @@ import java.util.List;
 public class ChatController {
 
     @Autowired
-    private ChatRepository chatRepository;
+    private ChatService chatService;
 
-    // Create a new Chat
     @PostMapping()
-    public Chat createChat(@RequestBody Chat chat) {
-        return chatRepository.save(chat);
+    public Chat createChat(@RequestBody ChatDto chatDto) {
+        return chatService.createChat(chatDto);
     }
 
-    // Get all Chats
     @GetMapping
     public List<Chat> getAllChats() {
-        return chatRepository.findAll();
+        return chatService.getAllChats();
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteChat(@PathVariable Integer id) {
+        chatService.deleteChat(id);
+    }
+
+    @PutMapping("/{id}")
+    public Chat updateChat(@PathVariable Integer id, @RequestBody ChatDto chatDto) {
+        return chatService.updateChat(id, chatDto);
     }
 }

@@ -2,6 +2,7 @@ package com.sr03.chat_app.controllers;
 
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.services.UserService;
+import com.sr03.chat_app.dtos.LoginDto;
 import com.sr03.chat_app.dtos.UserDto;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,11 @@ public class UserController {
     @GetMapping()
     public List<User> getAllUsers() {
         return userService.getAllUsers();
+    }
+
+    @PostMapping("/login")
+    public User login(@RequestBody LoginDto loginDto) {
+        return userService.login(loginDto);
     }
 
     @GetMapping("/{id}")
