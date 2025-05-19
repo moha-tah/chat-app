@@ -73,10 +73,10 @@ public class WebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        Integer authenticatedUserId = authenticatedUsers.get(session.getId());
+        receivedMessage.setUserId(authenticatedUsers.get(session.getId()));
 
-        logger.info("Message reçu de l'utilisateur " + authenticatedUserId + " (" + receivedMessage.getUserId() + "): "
-                + receivedMessage.getMessage());
+        logger.info("Message reçu de l'utilisateur " + receivedMessage.getUserId() + " ("
+                + receivedMessage.getUserId() + "): " + receivedMessage.getMessage());
 
         if ("CHAT_MESSAGE".equals(receivedMessage.getType())) {
             handleChatMessage(session, receivedMessage);
@@ -158,7 +158,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        messageSocketsHistory.add(chatMessage); // Store the original MessageSocket
+        messageSocketsHistory.add(chatMessage);
         broadcast(mapper.writeValueAsString(chatMessage)); // Broadcast the original MessageSocket
     }
 
