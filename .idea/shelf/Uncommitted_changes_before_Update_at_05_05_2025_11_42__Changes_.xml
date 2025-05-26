@@ -1,0 +1,14 @@
+<changelist name="Uncommitted_changes_before_Update_at_05_05_2025_11_42_[Changes]" date="1746438166408" recycled="false" toDelete="true">
+  <option name="PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_05_05_2025_11_42_[Changes]/shelved.patch" />
+  <option name="DESCRIPTION" value="Uncommitted changes before Update at 05/05/2025 11:42 [Changes]" />
+  <binary>
+    <option name="BEFORE_PATH" value="mvnw.cmd" />
+    <option name="AFTER_PATH" value="backend/mvnw.cmd" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_05_05_2025_11_42_[Changes]/mvnw.cmd" />
+  </binary>
+  <binary>
+    <option name="BEFORE_PATH" value="mvnw" />
+    <option name="AFTER_PATH" value="backend/mvnw" />
+    <option name="SHELVED_PATH" value="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_05_05_2025_11_42_[Changes]/mvnw" />
+  </binary>
+</changelist>

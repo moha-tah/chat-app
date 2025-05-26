@@ -10,14 +10,12 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
-
 import com.sr03.chat_app.models.Chat;
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.models.Invitation;
 import com.sr03.chat_app.repositories.ChatRepository;
 import com.sr03.chat_app.repositories.InvitationRepository;
 import com.sr03.chat_app.repositories.UserRepository;
-
 import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;

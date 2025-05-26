@@ -4,10 +4,8 @@ import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.services.UserService;
 import com.sr03.chat_app.dtos.LoginDto;
 import com.sr03.chat_app.dtos.UserDto;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController

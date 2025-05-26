@@ -1,0 +1,1203 @@
+Index: src/main/java/com/example/demo/controller/InvitationApiController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.example.demo.controller;\r\nimport com.example.demo.model.Chat;\r\nimport com.example.demo.model.Invitation;\r\nimport com.example.demo.model.User;\r\nimport org.springframework.beans.factory.annotation.Autowired;\r\nimport org.springframework.web.bind.annotation.*;\r\nimport com.example.demo.repository.invitationdata ;\r\nimport com.example.demo.repository.chatdata ;\r\nimport com.example.demo.repository.userdata ;\r\nimport java.util.List;\r\n\r\n@RestController\r\n@RequestMapping(\"/api/invitations\")\r\npublic class InvitationApiController {\r\n\r\n    @Autowired\r\n    private invitationdata invitationRepo;\r\n\r\n    @Autowired\r\n    private chatdata chatRepo;\r\n\r\n    @Autowired\r\n    private userdata userRepo;\r\n\r\n    @PostMapping(\"/create\")\r\n    public Invitation createInvitation(@RequestParam String chatId, @RequestParam int userId) {\r\n        Chat chat = chatRepo.findById(chatId).orElseThrow();\r\n        User user = userRepo.findById(userId).orElseThrow();\r\n\r\n        Invitation invitation = new Invitation(chat, user);\r\n        return invitationRepo.save(invitation);\r\n    }\r\n\r\n    @GetMapping\r\n    public List<Invitation> getAllInvitations() {\r\n        return invitationRepo.findAll();\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/controller/InvitationApiController.java b/src/main/java/com/example/demo/controller/InvitationApiController.java
+--- a/src/main/java/com/example/demo/controller/InvitationApiController.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/src/main/java/com/example/demo/controller/InvitationApiController.java	(date 1746437808417)
+@@ -1,38 +1,0 @@
+-package com.example.demo.controller;
+-import com.example.demo.model.Chat;
+-import com.example.demo.model.Invitation;
+-import com.example.demo.model.User;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.web.bind.annotation.*;
+-import com.example.demo.repository.invitationdata ;
+-import com.example.demo.repository.chatdata ;
+-import com.example.demo.repository.userdata ;
+-import java.util.List;
+-
+-@RestController
+-@RequestMapping("/api/invitations")
+-public class InvitationApiController {
+-
+-    @Autowired
+-    private invitationdata invitationRepo;
+-
+-    @Autowired
+-    private chatdata chatRepo;
+-
+-    @Autowired
+-    private userdata userRepo;
+-
+-    @PostMapping("/create")
+-    public Invitation createInvitation(@RequestParam String chatId, @RequestParam int userId) {
+-        Chat chat = chatRepo.findById(chatId).orElseThrow();
+-        User user = userRepo.findById(userId).orElseThrow();
+-
+-        Invitation invitation = new Invitation(chat, user);
+-        return invitationRepo.save(invitation);
+-    }
+-
+-    @GetMapping
+-    public List<Invitation> getAllInvitations() {
+-        return invitationRepo.findAll();
+-    }
+-}
+Index: src/main/java/com/example/demo/repository/userdata.java
+===================================================================
+diff --git a/src/main/java/com/example/demo/repository/userdata.java b/src/main/java/com/example/demo/repository/userdata.java
+deleted file mode 100644
+--- a/src/main/java/com/example/demo/repository/userdata.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ /dev/null	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
+@@ -1,11 +0,0 @@
+-package com.example.demo.repository;
+-
+-import com.example.demo.model.User;
+-import org.springframework.data.jpa.repository.JpaRepository;
+-import org.springframework.stereotype.Repository;  // This is optional, but good practice
+-
+-// Define the repository interface (extends JpaRepository)
+-@Repository
+-public interface userdata extends JpaRepository<User, Integer> {
+-    // You can add custom queries or methods here if needed
+-}
+Index: src/main/java/com/example/demo/model/TestModel.java
+===================================================================
+diff --git a/src/main/java/com/example/demo/model/TestModel.java b/src/main/java/com/example/demo/model/TestModel.java
+deleted file mode 100644
+--- a/src/main/java/com/example/demo/model/TestModel.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ /dev/null	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
+@@ -1,9 +0,0 @@
+-package com.example.demo.model;
+-
+-import java.time.LocalDateTime;
+-
+-public class TestModel {
+-    public static void main(String[] args) {
+-    }
+-}
+-
+Index: .idea/.gitignore
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+deleted file mode 100644
+--- a/.idea/.gitignore	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ /dev/null	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
+@@ -1,8 +0,0 @@
+-# Default ignored files
+-/shelf/
+-/workspace.xml
+-# Editor-based HTTP Client requests
+-/httpRequests/
+-# Datasource local storage ignored files
+-/dataSources/
+-/dataSources.local.xml
+Index: src/main/java/com/example/demo/repository/invitationdata.java
+===================================================================
+diff --git a/src/main/java/com/example/demo/repository/invitationdata.java b/src/main/java/com/example/demo/repository/invitationdata.java
+deleted file mode 100644
+--- a/src/main/java/com/example/demo/repository/invitationdata.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ /dev/null	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
+@@ -1,9 +0,0 @@
+-package com.example.demo.repository;
+-
+-import com.example.demo.model.Invitation;
+-import org.springframework.data.jpa.repository.JpaRepository;
+-import org.springframework.stereotype.Repository;  // This is optional, but good practice
+-
+-@Repository
+-public interface invitationdata extends JpaRepository<Invitation, Integer> { }
+-
+Index: src/main/java/com/example/demo/repository/chatdata.java
+===================================================================
+diff --git a/src/main/java/com/example/demo/repository/chatdata.java b/src/main/java/com/example/demo/repository/chatdata.java
+deleted file mode 100644
+--- a/src/main/java/com/example/demo/repository/chatdata.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ /dev/null	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
+@@ -1,9 +0,0 @@
+-package com.example.demo.repository;
+-
+-import com.example.demo.model.Chat;
+-import org.springframework.data.jpa.repository.JpaRepository;
+-import org.springframework.stereotype.Repository;  // This is optional, but good practice
+-
+-@Repository
+-public interface chatdata extends JpaRepository<Chat, String> { }
+-
+Index: Java Project.iml
+===================================================================
+diff --git a/Java Project.iml b/Java Project.iml
+deleted file mode 100644
+--- a/Java Project.iml	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ /dev/null	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
+@@ -1,11 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<module type="JAVA_MODULE" version="4">
+-  <component name="NewModuleRootManager" inherit-compiler-output="true">
+-    <exclude-output />
+-    <content url="file://$MODULE_DIR$">
+-      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+-    </content>
+-    <orderEntry type="inheritedJdk" />
+-    <orderEntry type="sourceFolder" forTests="false" />
+-  </component>
+-</module>
+\ No newline at end of file
+Index: src/main/java/com/example/demo/controller/ChatApiController.java
+===================================================================
+diff --git a/src/main/java/com/example/demo/controller/ChatApiController.java b/src/main/java/com/example/demo/controller/ChatApiController.java
+deleted file mode 100644
+--- a/src/main/java/com/example/demo/controller/ChatApiController.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ /dev/null	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
+@@ -1,36 +0,0 @@
+-package com.example.demo.controller;
+-import com.example.demo.model.Chat;
+-import com.example.demo.model.User;
+-import com.example.demo.repository.chatdata;
+-import com.example.demo.repository.userdata;
+-import org.springframework.beans.factory.annotation.Autowired;
+-import org.springframework.web.bind.annotation.*;
+-import java.util.List;
+-
+-@RestController
+-
+-@RequestMapping("/api/chat")
+-public class ChatApiController {
+-
+-    @Autowired
+-    private chatdata chatdatarepo;
+-
+-    // Create a new Chat
+-    @PostMapping("/create")
+-    public Chat createUser(@RequestBody Chat Chat) {
+-        return chatdatarepo.save(Chat);
+-    }
+-
+-    // Get all Chats
+-    @GetMapping
+-    public List<Chat> getAllChats() {
+-        return chatdatarepo.findAll();
+-    }
+-
+-}
+-
+-
+-
+-
+-
+-
+Index: .idea/compiler.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/compiler.xml b/.idea/compiler.xml
+new file mode 100644
+--- /dev/null	(date 1746437681407)
++++ b/.idea/compiler.xml	(date 1746437681407)
+@@ -0,0 +1,22 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="CompilerConfiguration">
++    <annotationProcessing>
++      <profile name="Maven default annotation processors profile" enabled="true">
++        <sourceOutputDir name="target/generated-sources/annotations" />
++        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
++        <outputRelativeToContentRoot value="true" />
++        <module name="demo" />
++      </profile>
++    </annotationProcessing>
++    <bytecodeTargetLevel>
++      <module name="Demo" target="17" />
++    </bytecodeTargetLevel>
++  </component>
++  <component name="JavacSettings">
++    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
++      <module name="Demo" options="-parameters" />
++      <module name="demo" options="-parameters" />
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/dataSources.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/dataSources.xml b/.idea/dataSources.xml
+new file mode 100644
+--- /dev/null	(date 1746103454440)
++++ b/.idea/dataSources.xml	(date 1746103454440)
+@@ -0,0 +1,18 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
++    <data-source source="LOCAL" name="postgres@localhost" uuid="26b2c85e-14ba-40c8-8b65-042f926fc0a6">
++      <driver-ref>postgresql</driver-ref>
++      <synchronize>true</synchronize>
++      <imported>true</imported>
++      <jdbc-driver>org.postgresql.Driver</jdbc-driver>
++      <jdbc-url>jdbc:postgresql://localhost:5432/postgres</jdbc-url>
++      <jdbc-additional-properties>
++        <property name="com.intellij.clouds.kubernetes.db.host.port" />
++        <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
++        <property name="com.intellij.clouds.kubernetes.db.container.port" />
++      </jdbc-additional-properties>
++      <working-dir>$ProjectFileDir$</working-dir>
++    </data-source>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+new file mode 100644
+--- /dev/null	(date 1746438093455)
++++ b/.idea/workspace.xml	(date 1746438093455)
+@@ -0,0 +1,167 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="AutoImportSettings">
++    <option name="autoReloadType" value="SELECTIVE" />
++  </component>
++  <component name="ChangeListManager">
++    <list default="true" id="a2ad77df-24e3-49c4-9a2e-b2cd4e12ec32" name="Changes" comment="">
++      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/controllers/ChatController.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/controllers/InvitationController.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/repositories/ChatRepository.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/repositories/InvitationRepository.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/repositories/UserRepository.java" afterDir="false" />
++      <change afterPath="$PROJECT_DIR$/backend/src/test/java/com/sr03/chat_app/DemoApplicationTests.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/Java Project.iml" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/mvnw" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/mvnw.cmd" beforeDir="false" afterPath="$PROJECT_DIR$/backend/mvnw.cmd" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/backend/pom.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/Main.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/DemoApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/BackApplication.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/ChatApiController.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/InvitationApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/InvitationApiController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/UserApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/controllers/UserController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/controller/WebController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/controllers/WebController.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/model/Chat.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/models/Chat.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/model/Invitation.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/models/Invitation.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/model/TestModel.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/model/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/models/User.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/chatdata.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/invitationdata.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/repository/userdata.java" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/services/JakartaEmail.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/services/JakartaEmail.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/demo/services/ServicesRequest.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/sr03/chat_app/services/ServicesRequest.java" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/resources/static/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/static/styles.css" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/admin.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/templates/admin.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/src/main/resources/templates/user.html" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/templates/user.html" afterDir="false" />
++    </list>
++    <option name="SHOW_DIALOG" value="false" />
++    <option name="HIGHLIGHT_CONFLICTS" value="true" />
++    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
++    <option name="LAST_RESOLUTION" value="IGNORE" />
++  </component>
++  <component name="Git.Settings">
++    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
++  </component>
++  <component name="GitHubPullRequestSearchHistory">{
++  &quot;lastFilter&quot;: {
++    &quot;state&quot;: &quot;OPEN&quot;,
++    &quot;assignee&quot;: &quot;moha-tah&quot;
++  }
++}</component>
++  <component name="GithubPullRequestsUISettings">{
++  &quot;selectedUrlAndAccountId&quot;: {
++    &quot;url&quot;: &quot;https://github.com/moha-tah/chat-app.git&quot;,
++    &quot;accountId&quot;: &quot;a29141f8-278a-4d4e-a7cb-84e07adab92d&quot;
++  }
++}</component>
++  <component name="ProjectColorInfo">{
++  &quot;associatedIndex&quot;: 0
++}</component>
++  <component name="ProjectId" id="2wfZMwdms7FbO2pubTo67m7btH6" />
++  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
++  <component name="ProjectViewState">
++    <option name="hideEmptyMiddlePackages" value="true" />
++    <option name="showLibraryContents" value="true" />
++  </component>
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
++    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
++    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
++    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
++    &quot;Spring Boot.BackApplication (1).executor&quot;: &quot;Run&quot;,
++    &quot;Spring Boot.BackApplication.executor&quot;: &quot;Run&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;Merging main&quot;,
++    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
++    &quot;last_opened_file_path&quot;: &quot;/Users/mohamedtahiri/Projects/chat-app&quot;,
++    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
++    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
++    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
++    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
++    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
++    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
++  }
++}</component>
++  <component name="RecentsManager">
++    <key name="MoveFile.RECENT_KEYS">
++      <recent name="$PROJECT_DIR$/backend" />
++    </key>
++  </component>
++  <component name="RunManager" selected="Spring Boot.BackApplication">
++    <configuration name="BackApplication (1)" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" temporary="true" nameIsGenerated="true">
++      <module name="Demo" />
++      <option name="SPRING_BOOT_MAIN_CLASS" value="com.sr03.chat_app.BackApplication" />
++      <extension name="coverage">
++        <pattern>
++          <option name="PATTERN" value="com.sr03.chat_app.*" />
++          <option name="ENABLED" value="true" />
++        </pattern>
++      </extension>
++      <method v="2">
++        <option name="Make" enabled="true" />
++      </method>
++    </configuration>
++    <configuration name="BackApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
++      <option name="ALTERNATIVE_JRE_PATH" value="openjdk-24" />
++      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
++      <option name="SPRING_BOOT_MAIN_CLASS" value="com.example.demo.BackApplication" />
++      <method v="2">
++        <option name="Make" enabled="true" />
++      </method>
++    </configuration>
++    <recent_temporary>
++      <list>
++        <item itemvalue="Spring Boot.BackApplication (1)" />
++      </list>
++    </recent_temporary>
++  </component>
++  <component name="SharedIndexes">
++    <attachedChunks>
++      <set>
++        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.25659.39" />
++        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.25659.39" />
++      </set>
++    </attachedChunks>
++  </component>
++  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
++  <component name="TaskManager">
++    <task active="true" id="Default" summary="Default task">
++      <changelist id="a2ad77df-24e3-49c4-9a2e-b2cd4e12ec32" name="Changes" comment="" />
++      <created>1746434543862</created>
++      <option name="number" value="Default" />
++      <option name="presentableId" value="Default" />
++      <updated>1746434543862</updated>
++      <workItem from="1746434545213" duration="2054000" />
++      <workItem from="1746436714461" duration="14000" />
++      <workItem from="1746437994299" duration="99000" />
++    </task>
++    <servers />
++  </component>
++  <component name="TypeScriptGeneratedFilesManager">
++    <option name="version" value="3" />
++  </component>
++  <component name="Vcs.Log.Tabs.Properties">
++    <option name="TAB_STATES">
++      <map>
++        <entry key="MAIN">
++          <value>
++            <State />
++          </value>
++        </entry>
++      </map>
++    </option>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/encodings.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/encodings.xml b/.idea/encodings.xml
+new file mode 100644
+--- /dev/null	(date 1745788248883)
++++ b/.idea/encodings.xml	(date 1745788248883)
+@@ -0,0 +1,6 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="Encoding">
++    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/jarRepositories.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/jarRepositories.xml b/.idea/jarRepositories.xml
+new file mode 100644
+--- /dev/null	(date 1745788248891)
++++ b/.idea/jarRepositories.xml	(date 1745788248891)
+@@ -0,0 +1,20 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="RemoteRepositoriesConfiguration">
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Central Repository" />
++      <option name="url" value="https://repo.maven.apache.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="central" />
++      <option name="name" value="Maven Central repository" />
++      <option name="url" value="https://repo1.maven.org/maven2" />
++    </remote-repository>
++    <remote-repository>
++      <option name="id" value="jboss.community" />
++      <option name="name" value="JBoss Community repository" />
++      <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
++    </remote-repository>
++  </component>
++</project>
+\ No newline at end of file
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"VcsDirectoryMappings\">\r\n    <mapping directory=\"$PROJECT_DIR$/../..\" vcs=\"Git\" />\r\n    <mapping directory=\"$PROJECT_DIR$\" vcs=\"Git\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+--- a/.idea/vcs.xml	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/.idea/vcs.xml	(date 1746437643512)
+@@ -1,7 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="VcsDirectoryMappings">
+-    <mapping directory="$PROJECT_DIR$/../.." vcs="Git" />
+-    <mapping directory="$PROJECT_DIR$" vcs="Git" />
++    <mapping directory="" vcs="Git" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: pom.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/pom.xml b/backend/pom.xml
+rename from pom.xml
+rename to backend/pom.xml
+--- a/pom.xml	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/pom.xml	(date 1746437643517)
+@@ -4,8 +4,8 @@
+          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+     <modelVersion>4.0.0</modelVersion>
+ 
+-    <groupId>com.exemple</groupId>
+-    <artifactId>Demo</artifactId>
++    <groupId>com.sr03</groupId>
++    <artifactId>chat_app</artifactId>
+     <version>1.0.0</version>
+ 
+     <properties>
+@@ -89,6 +89,21 @@
+             <groupId>org.springframework.boot</groupId>
+             <artifactId>spring-boot-starter-websocket</artifactId>
+         </dependency>
++        <dependency>
++            <groupId>junit</groupId>
++            <artifactId>junit</artifactId>
++            <scope>test</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.junit.jupiter</groupId>
++            <artifactId>junit-jupiter</artifactId>
++            <scope>test</scope>
++        </dependency>
++        <dependency>
++            <groupId>org.springframework.boot</groupId>
++            <artifactId>spring-boot-starter-test</artifactId>
++            <scope>test</scope>
++        </dependency>
+ 
+ 
+     </dependencies>
+Index: src/main/resources/application.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>ISO-8859-1
+===================================================================
+diff --git a/src/main/resources/application.properties b/backend/src/main/resources/application.properties
+rename from src/main/resources/application.properties
+rename to backend/src/main/resources/application.properties
+--- a/src/main/resources/application.properties	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/resources/application.properties	(date 1746437643527)
+@@ -2,7 +2,7 @@
+ # PostgreSQL connection info
+ spring.datasource.url=jdbc:postgresql://localhost:5432/postgres
+ spring.datasource.username=postgres
+-spring.datasource.password=TERRIFYTHEDARK#2025
++spring.datasource.password=postgres
+ spring.datasource.driver-class-name=org.postgresql.Driver
+ 
+ 
+Index: src/main/resources/templates/user.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/user.html b/backend/src/main/resources/templates/user.html
+rename from src/main/resources/templates/user.html
+rename to backend/src/main/resources/templates/user.html
+--- a/src/main/resources/templates/user.html	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/resources/templates/user.html	(date 1746437643530)
+@@ -3,7 +3,7 @@
+ <head>
+     <meta charset="UTF-8">
+     <title>Page Utilisateur - Application de Chat</title>
+-    <link rel="stylesheet" href="/style.css">
++    <link rel="stylesheet" href="/styles.css">
+ </head>
+ 
+ <body>
+Index: src/main/resources/templates/admin.html
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/templates/admin.html b/backend/src/main/resources/templates/admin.html
+rename from src/main/resources/templates/admin.html
+rename to backend/src/main/resources/templates/admin.html
+--- a/src/main/resources/templates/admin.html	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/resources/templates/admin.html	(date 1746437643529)
+@@ -3,7 +3,7 @@
+ <head>
+     <meta charset="UTF-8">
+     <title>Page Admin - Application de Chat</title>
+-    <link rel="stylesheet" href="/style.css">
++    <link rel="stylesheet" href="/styles.css">
+ 
+ </head>
+ <body>
+Index: src/main/resources/static/style.css
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/resources/static/style.css b/backend/src/main/resources/static/styles.css
+rename from src/main/resources/static/style.css
+rename to backend/src/main/resources/static/styles.css
+--- a/src/main/resources/static/style.css	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/resources/static/styles.css	(date 1746437643528)
+@@ -10,6 +10,7 @@
+     min-height: 100vh;
+     margin: 0;
+ }
++
+ header {
+     grid-area: header;
+     background-color: #4B3B94;
+@@ -17,23 +18,27 @@
+     padding: 1em;
+     text-align: center;
+ }
++
+ nav {
+     grid-area: nav;
+     background-color: #5D50A5;
+     padding: 1em;
+     color: white;
+ }
++
+ aside {
+     grid-area: aside;
+     background-color: #C74C0B;
+     padding: 1em;
+     color: white;
+ }
++
+ main {
+     grid-area: main;
+     background-color: #F5D6C6;
+     padding: 1em;
+ }
++
+ footer {
+     grid-area: footer;
+     background-color: #4B3B94;
+Index: src/main/java/com/example/demo/DemoApplication.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/DemoApplication.java b/backend/src/main/java/com/sr03/chat_app/BackApplication.java
+rename from src/main/java/com/example/demo/DemoApplication.java
+rename to backend/src/main/java/com/sr03/chat_app/BackApplication.java
+--- a/src/main/java/com/example/demo/DemoApplication.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/java/com/sr03/chat_app/BackApplication.java	(date 1746437643519)
+@@ -1,13 +1,11 @@
+-package com.example.demo;
++package com.sr03.chat_app;
+ 
+ import org.springframework.boot.SpringApplication;
+ import org.springframework.boot.autoconfigure.SpringBootApplication;
+ 
+ @SpringBootApplication
+-public class DemoApplication {
+-
++public class BackApplication {
+     public static void main(String[] args) {
+-        SpringApplication.run(DemoApplication.class, args);
++        SpringApplication.run(BackApplication.class, args);
+     }
+-
+ }
+Index: backend/src/test/java/com/sr03/chat_app/DemoApplicationTests.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/test/java/com/sr03/chat_app/DemoApplicationTests.java b/backend/src/test/java/com/sr03/chat_app/DemoApplicationTests.java
+new file mode 100644
+--- /dev/null	(date 1746437643535)
++++ b/backend/src/test/java/com/sr03/chat_app/DemoApplicationTests.java	(date 1746437643535)
+@@ -0,0 +1,13 @@
++package com.sr03.chat_app;
++
++import org.junit.jupiter.api.Test;
++import org.springframework.boot.test.context.SpringBootTest;
++
++@SpringBootTest
++class DemoApplicationTests {
++
++    @Test
++    void contextLoads() {
++    }
++
++}
+Index: src/main/java/com/example/demo/services/JakartaEmail.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/services/JakartaEmail.java b/backend/src/main/java/com/sr03/chat_app/services/JakartaEmail.java
+rename from src/main/java/com/example/demo/services/JakartaEmail.java
+rename to backend/src/main/java/com/sr03/chat_app/services/JakartaEmail.java
+--- a/src/main/java/com/example/demo/services/JakartaEmail.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/java/com/sr03/chat_app/services/JakartaEmail.java	(date 1746437643526)
+@@ -1,4 +1,4 @@
+-package com.example.demo.services;
++package com.sr03.chat_app.services;
+ 
+ import jakarta.mail.*;
+ import jakarta.mail.internet.InternetAddress;
+@@ -10,12 +10,11 @@
+ public class JakartaEmail {
+ 
+ 
+-
+     public JakartaEmail() {
+     }
+ 
+ 
+-    public void sendMail(){
++    public void sendMail() {
+         String to = "cedric.martinet@utc.fr";
+         String from = "3333@utc.fr";
+         String host = "smtp1.utc.fr";
+@@ -39,7 +38,6 @@
+     }
+ 
+ 
+-
+ }
+ 
+ 
+Index: src/main/java/com/example/demo/model/User.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/model/User.java b/backend/src/main/java/com/sr03/chat_app/models/User.java
+rename from src/main/java/com/example/demo/model/User.java
+rename to backend/src/main/java/com/sr03/chat_app/models/User.java
+--- a/src/main/java/com/example/demo/model/User.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/java/com/sr03/chat_app/models/User.java	(date 1746437865198)
+@@ -5,7 +5,7 @@
+ import java.util.Set;
+ 
+ @Entity
+-@Table(name = "users") // Optional, you can keep this if the table name is exactly "utilisateur"
++@Table(name = "user") // Optional, you can keep this if the table name is exactly "utilisateur"
+ public class User {
+ 
+     @Id
+Index: src/main/java/com/example/demo/model/Invitation.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/model/Invitation.java b/backend/src/main/java/com/sr03/chat_app/models/Invitation.java
+rename from src/main/java/com/example/demo/model/Invitation.java
+rename to backend/src/main/java/com/sr03/chat_app/models/Invitation.java
+--- a/src/main/java/com/example/demo/model/Invitation.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/java/com/sr03/chat_app/models/Invitation.java	(date 1746437643522)
+@@ -1,22 +1,21 @@
+-package com.example.demo.model;
++package com.sr03.chat_app.models;
+ 
+ import jakarta.persistence.*;
+-import java.util.UUID;
+ 
+ @Entity
+-@Table(name = "invitation") // <-- exactly as in your PostgreSQL database
++@Table(name = "invitations")
+ public class Invitation {
+ 
+     @Id
+     @GeneratedValue(strategy = GenerationType.IDENTITY)
+-    private int invitationId; // Primary key of the table
++    private int id;
+ 
+     @ManyToOne
+-    @JoinColumn(name = "chat", nullable = false) // "chat" column (uuid) in your table
++    @JoinColumn(name = "chat", nullable = false)
+     private Chat chat;
+ 
+     @ManyToOne
+-    @JoinColumn(name = "user", nullable = false) // "user" column (integer) in your table
++    @JoinColumn(name = "user", nullable = false)
+     private User user;
+ 
+     // === Constructors ===
+@@ -32,12 +31,12 @@
+ 
+     // === Getters and Setters ===
+ 
+-    public int getInvitationId() {
+-        return invitationId;
++    public int getId() {
++        return id;
+     }
+ 
+-    public void setInvitationId(int invitationId) {
+-        this.invitationId = invitationId;
++    public void setId(int invitationId) {
++        this.id = invitationId;
+     }
+ 
+     public Chat getChat() {
+Index: src/main/java/com/example/demo/model/Chat.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/model/Chat.java b/backend/src/main/java/com/sr03/chat_app/models/Chat.java
+rename from src/main/java/com/example/demo/model/Chat.java
+rename to backend/src/main/java/com/sr03/chat_app/models/Chat.java
+--- a/src/main/java/com/example/demo/model/Chat.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/java/com/sr03/chat_app/models/Chat.java	(date 1746437877545)
+@@ -6,12 +6,11 @@
+ import jakarta.persistence.*;
+ 
+ @Entity
+-@Table(name  ="chat")
+ public class Chat {
+ 
+     @Id
+     @GeneratedValue(strategy = GenerationType.AUTO) // Automatically generate UUID
+-    private UUID id;
++    private String id;
+ 
+     @Column(nullable = false)
+     private String title;
+@@ -38,7 +37,7 @@
+ 
+     // Constructor with parameters
+     public Chat(String title, String description, LocalDateTime dateTime, int durationMinutes, User creator) {
+-        this.id = UUID.randomUUID();
++        this.id = UUID.randomUUID().toString();
+         this.title = title;
+         this.description = description;
+         this.dateTime = dateTime;
+@@ -47,7 +46,7 @@
+     }
+ 
+     // Getters and Setters
+-    public UUID getId() {
++    public String getId() {
+         return id;
+     }
+ 
+Index: src/main/java/com/example/demo/controller/UserApiController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/controller/UserApiController.java b/backend/src/main/java/com/sr03/chat_app/controllers/UserController.java
+rename from src/main/java/com/example/demo/controller/UserApiController.java
+rename to backend/src/main/java/com/sr03/chat_app/controllers/UserController.java
+--- a/src/main/java/com/example/demo/controller/UserApiController.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/java/com/sr03/chat_app/controllers/UserController.java	(date 1746437643521)
+@@ -1,28 +1,30 @@
+-package com.example.demo.controller;
+-import com.example.demo.model.User;
+-import com.example.demo.repository.userdata;
++package com.sr03.chat_app.controllers;
++
++import com.sr03.chat_app.models.User;
++import com.sr03.chat_app.repositories.UserRepository;
+ import org.springframework.beans.factory.annotation.Autowired;
+ import org.springframework.web.bind.annotation.*;
++
+ import java.util.List;
+ 
+ @RestController
+ 
+-@RequestMapping("/api/user")
+-public class UserApiController {
++@RequestMapping("/api/users")
++public class UserController {
+ 
+     @Autowired
+-    private userdata UserRepo;
++    private UserRepository userRepository;
+ 
+     // Create a new user
+     @PostMapping("/create")
+     public User createUser(@RequestBody User user) {
+-        return UserRepo.save(user);
++        return userRepository.save(user);
+     }
+ 
+     // Get all users
+     @GetMapping
+     public List<User> getAllUsers() {
+-        return UserRepo.findAll();
++        return userRepository.findAll();
+     }
+ 
+ }
+Index: backend/src/main/java/com/sr03/chat_app/controllers/InvitationController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/com/sr03/chat_app/controllers/InvitationController.java b/backend/src/main/java/com/sr03/chat_app/controllers/InvitationController.java
+new file mode 100644
+--- /dev/null	(date 1746437643520)
++++ b/backend/src/main/java/com/sr03/chat_app/controllers/InvitationController.java	(date 1746437643520)
+@@ -0,0 +1,40 @@
++package com.sr03.chat_app.controllers;
++
++import com.sr03.chat_app.models.Chat;
++import com.sr03.chat_app.models.Invitation;
++import com.sr03.chat_app.models.User;
++import com.sr03.chat_app.repositories.ChatRepository;
++import com.sr03.chat_app.repositories.InvitationRepository;
++import com.sr03.chat_app.repositories.UserRepository;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/invitations")
++public class InvitationController {
++
++    @Autowired
++    private InvitationRepository invitationRepository;
++
++    @Autowired
++    private ChatRepository chatRepository;
++
++    @Autowired
++    private UserRepository userRepository;
++
++    @PostMapping
++    public Invitation createInvitation(@RequestParam String chatId, @RequestParam int userId) {
++        Chat chat = chatRepository.findById(chatId).orElseThrow();
++        User user = userRepository.findById(userId).orElseThrow();
++
++        Invitation invitation = new Invitation(chat, user);
++        return invitationRepository.save(invitation);
++    }
++
++    @GetMapping
++    public List<Invitation> getAllInvitations() {
++        return invitationRepository.findAll();
++    }
++}
+Index: backend/src/main/java/com/sr03/chat_app/controllers/ChatController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/com/sr03/chat_app/controllers/ChatController.java b/backend/src/main/java/com/sr03/chat_app/controllers/ChatController.java
+new file mode 100644
+--- /dev/null	(date 1746437643520)
++++ b/backend/src/main/java/com/sr03/chat_app/controllers/ChatController.java	(date 1746437643520)
+@@ -0,0 +1,35 @@
++package com.sr03.chat_app.controllers;
++
++import com.sr03.chat_app.models.Chat;
++import com.sr03.chat_app.repositories.ChatRepository;
++import org.springframework.beans.factory.annotation.Autowired;
++import org.springframework.web.bind.annotation.*;
++
++import java.util.List;
++
++@RestController
++@RequestMapping("/api/chats")
++public class ChatController {
++
++    @Autowired
++    private ChatRepository chatRepository;
++
++    // Create a new Chat
++    @PostMapping("/create")
++    public Chat createUser(@RequestBody Chat Chat) {
++        return chatRepository.save(Chat);
++    }
++
++    // Get all Chats
++    @GetMapping
++    public List<Chat> getAllChats() {
++        return chatRepository.findAll();
++    }
++
++}
++
++
++
++
++
++
+Index: src/main/java/com/example/demo/services/ServicesRequest.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/services/ServicesRequest.java b/backend/src/main/java/com/sr03/chat_app/services/ServicesRequest.java
+rename from src/main/java/com/example/demo/services/ServicesRequest.java
+rename to backend/src/main/java/com/sr03/chat_app/services/ServicesRequest.java
+--- a/src/main/java/com/example/demo/services/ServicesRequest.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/java/com/sr03/chat_app/services/ServicesRequest.java	(date 1746437643527)
+@@ -1,5 +1,6 @@
+-package com.example.demo.services;
+-import com.example.demo.model.User;
++package com.sr03.chat_app.services;
++
++import com.sr03.chat_app.models.User;
+ import jakarta.persistence.EntityManager;
+ import jakarta.persistence.PersistenceContext;
+ import jakarta.persistence.Query;
+@@ -15,31 +16,30 @@
+     @PersistenceContext
+     EntityManager em;
+ 
+-    public void addUser(User user){
++    public void addUser(User user) {
+         em.persist(user);
+     }
+ 
+-    public void updateUser(User user){
++    public void updateUser(User user) {
+         em.merge(user);
+     }
+ 
+-    public User getOneUser(int id){
++    public User getOneUser(int id) {
+         //return un user via la clé primaire
+         return em.find(User.class, id);
+     }
+ 
+-    public void deleteOneUser(int id){
++    public void deleteOneUser(int id) {
+         //return un user via la clé primaire
+         em.remove(em.find(User.class, id));
+     }
+ 
+     @SuppressWarnings("unchecked")
+-    public List<User> getUsers(){
++    public List<User> getUsers() {
+         Query q = em.createQuery("select u from User u");
+         return q.getResultList();
+     }
+ 
+ 
+-
+ }
+ 
+Index: backend/src/main/java/com/sr03/chat_app/repositories/UserRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/com/sr03/chat_app/repositories/UserRepository.java b/backend/src/main/java/com/sr03/chat_app/repositories/UserRepository.java
+new file mode 100644
+--- /dev/null	(date 1746437643526)
++++ b/backend/src/main/java/com/sr03/chat_app/repositories/UserRepository.java	(date 1746437643526)
+@@ -0,0 +1,9 @@
++package com.sr03.chat_app.repositories;
++
++import com.sr03.chat_app.models.User;
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.stereotype.Repository;
++
++@Repository
++public interface UserRepository extends JpaRepository<User, Integer> {
++}
+Index: backend/src/main/java/com/sr03/chat_app/repositories/InvitationRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/com/sr03/chat_app/repositories/InvitationRepository.java b/backend/src/main/java/com/sr03/chat_app/repositories/InvitationRepository.java
+new file mode 100644
+--- /dev/null	(date 1746437643525)
++++ b/backend/src/main/java/com/sr03/chat_app/repositories/InvitationRepository.java	(date 1746437643525)
+@@ -0,0 +1,10 @@
++package com.sr03.chat_app.repositories;
++
++import com.sr03.chat_app.models.Invitation;
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.stereotype.Repository;
++
++@Repository
++public interface InvitationRepository extends JpaRepository<Invitation, Integer> {
++}
++
+Index: backend/src/main/java/com/sr03/chat_app/repositories/ChatRepository.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/backend/src/main/java/com/sr03/chat_app/repositories/ChatRepository.java b/backend/src/main/java/com/sr03/chat_app/repositories/ChatRepository.java
+new file mode 100644
+--- /dev/null	(date 1746437643524)
++++ b/backend/src/main/java/com/sr03/chat_app/repositories/ChatRepository.java	(date 1746437643524)
+@@ -0,0 +1,10 @@
++package com.sr03.chat_app.repositories;
++
++import com.sr03.chat_app.models.Chat;
++import org.springframework.data.jpa.repository.JpaRepository;
++import org.springframework.stereotype.Repository;
++
++@Repository
++public interface ChatRepository extends JpaRepository<Chat, String> {
++}
++
+Index: src/main/java/com/example/demo/controller/WebController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/demo/controller/WebController.java b/backend/src/main/java/com/sr03/chat_app/controllers/WebController.java
+rename from src/main/java/com/example/demo/controller/WebController.java
+rename to backend/src/main/java/com/sr03/chat_app/controllers/WebController.java
+--- a/src/main/java/com/example/demo/controller/WebController.java	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/backend/src/main/java/com/sr03/chat_app/controllers/WebController.java	(date 1746437643521)
+@@ -1,4 +1,4 @@
+-package com.example.demo.controller;
++package com.sr03.chat_app.controllers;
+ 
+ import org.springframework.stereotype.Controller;
+ import org.springframework.web.bind.annotation.GetMapping;
+@@ -7,7 +7,7 @@
+ public class WebController {
+ 
+ //    @Autowired
+-//    private userdata userRepo; // Inject your repository here
++//    private userdata userRepo; // Inject your repositories here
+ 
+     @GetMapping("/admin")
+     public String adminPage() {
+Index: .idea/misc.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+><?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<project version=\"4\">\r\n  <component name=\"ExternalStorageConfigurationManager\" enabled=\"true\" />\r\n  <component name=\"MavenProjectsManager\">\r\n    <option name=\"originalFiles\">\r\n      <list>\r\n        <option value=\"$PROJECT_DIR$/pom.xml\" />\r\n      </list>\r\n    </option>\r\n  </component>\r\n  <component name=\"ProjectRootManager\" version=\"2\" languageLevel=\"JDK_24\" default=\"true\" project-jdk-name=\"openjdk-24\" project-jdk-type=\"JavaSDK\">\r\n    <output url=\"file://$PROJECT_DIR$/out\" />\r\n  </component>\r\n</project>
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/misc.xml b/.idea/misc.xml
+--- a/.idea/misc.xml	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/.idea/misc.xml	(date 1746437681391)
+@@ -1,14 +1,7 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <project version="4">
+   <component name="ExternalStorageConfigurationManager" enabled="true" />
+-  <component name="MavenProjectsManager">
+-    <option name="originalFiles">
+-      <list>
+-        <option value="$PROJECT_DIR$/pom.xml" />
+-      </list>
+-    </option>
+-  </component>
+-  <component name="ProjectRootManager" version="2" languageLevel="JDK_24" default="true" project-jdk-name="openjdk-24" project-jdk-type="JavaSDK">
++  <component name="ProjectRootManager" version="2" default="true">
+     <output url="file://$PROJECT_DIR$/out" />
+   </component>
+ </project>
+\ No newline at end of file
+Index: .gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>HELP.md\r\ntarget/\r\n!.mvn/wrapper/maven-wrapper.jar\r\n!**/src/main/**/target/\r\n!**/src/test/**/target/\r\n\r\n### STS ###\r\n.apt_generated\r\n.classpath\r\n.factorypath\r\n.project\r\n.settings\r\n.springBeans\r\n.sts4-cache\r\n\r\n### IntelliJ IDEA ###\r\n.idea\r\n*.iws\r\n*.iml\r\n*.ipr\r\n\r\n### NetBeans ###\r\n/nbproject/private/\r\n/nbbuild/\r\n/dist/\r\n/nbdist/\r\n/.nb-gradle/\r\nbuild/\r\n!**/src/main/**/build/\r\n!**/src/test/**/build/\r\n\r\n### VS Code ###\r\n.vscode/\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.gitignore b/.gitignore
+--- a/.gitignore	(revision a28dfbaf549f271addf1e89d21be0428980818eb)
++++ b/.gitignore	(date 1746437643511)
+@@ -1,6 +1,6 @@
+ HELP.md
+ target/
+-!.mvn/wrapper/maven-wrapper.jar
++!backend/.mvn/wrapper/maven-wrapper.jar
+ !**/src/main/**/target/
+ !**/src/test/**/target/
+ 
+@@ -14,7 +14,7 @@
+ .sts4-cache
+ 
+ ### IntelliJ IDEA ###
+-.idea
++backend/.idea
+ *.iws
+ *.iml
+ *.ipr
+@@ -31,3 +31,7 @@
+ 
+ ### VS Code ###
+ .vscode/
++
++# MacOS
++.DS_Store
++**/.DS_Store
+\ No newline at end of file
+diff --git a/src/Main.java b/backend/src/Main.java
+rename from src/Main.java
+rename to backend/src/Main.java
+diff --git a/.mvn/wrapper/maven-wrapper.properties b/backend/.mvn/wrapper/maven-wrapper.properties
+rename from .mvn/wrapper/maven-wrapper.properties
+rename to backend/.mvn/wrapper/maven-wrapper.properties
