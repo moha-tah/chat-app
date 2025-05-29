@@ -1,7 +1,6 @@
 package com.sr03.chat_app.websockets;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
@@ -20,17 +19,22 @@ import com.sr03.chat_app.repositories.InvitationRepository;
 import com.sr03.chat_app.repositories.UserRepository;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class WebSocketHandler extends TextWebSocketHandler {
 
     private final Logger logger = Logger.getLogger(WebSocketHandler.class.getName());
-    private final List<WebSocketSession> sessions;
-    private final List<MessageSocket> messageSocketsHistory;
+
+    // Map to store sessions per chat ID
+    private final Map<Integer, List<WebSocketSession>> chatSessions = new ConcurrentHashMap<>();
+
+    // Map to store message history per chat ID
+    private final Map<Integer, List<MessageSocket>> messageHistoryPerChat = new ConcurrentHashMap<>();
 
     @Autowired
     private InvitationRepository invitationRepository;
@@ -40,7 +44,12 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private ChatRepository chatRepository;
-    private final Map<String, Integer> authenticatedUsers = new HashMap<>(); // Session ID -> User ID
+
+    // Map to store authenticated users (Session ID -> User ID)
+    private final Map<String, Integer> authenticatedUsers = new ConcurrentHashMap<>();
+
+    // Map to store chat IDs associated with each session
+    private final Map<String, Integer> sessionChatIds = new ConcurrentHashMap<>();
 
     public WebSocketHandler(InvitationRepository invitationRepository,
             UserRepository userRepository,
@@ -48,8 +57,6 @@ public class WebSocketHandler extends TextWebSocketHandler {
         this.invitationRepository = invitationRepository;
         this.userRepository = userRepository;
         this.chatRepository = chatRepository;
-        this.messageSocketsHistory = new ArrayList<>();
-        this.sessions = new ArrayList<>();
     }
 
     @Override
@@ -59,24 +66,35 @@ public class WebSocketHandler extends TextWebSocketHandler {
         String payload = (String) message.getPayload();
         MessageSocket receivedMessage = mapper.readValue(payload, MessageSocket.class);
 
+        // Extract chatId from session attribute
+        Integer chatId = sessionChatIds.get(session.getId());
+        if (chatId == null) {
+            logger.error("Session " + session.getId() + " has no associated chatId");
+            session.close(CloseStatus.PROTOCOL_ERROR.withReason("No chat ID associated with this session"));
+            return;
+        }
+
         if ("AUTH_RESPONSE".equals(receivedMessage.getType())) {
-            handleAuthenticationResponse(session, receivedMessage, mapper);
+            handleAuthenticationResponse(session, receivedMessage, mapper, chatId);
             return;
         }
 
         if (!authenticatedUsers.containsKey(session.getId())) {
-            logger.warn("Message reçu de la session non authentifiée " + session.getId() + ": "
+            logger.warn("Message received from unauthenticated session " + session.getId() + ": "
                     + receivedMessage.getMessage());
             session.sendMessage(new TextMessage(
-                    mapper.writeValueAsString(Map.of("type", "ERROR", "message",
-                            "Authentification requise. Veuillez d'abord envoyer AUTH_RESPONSE."))));
+                    mapper.writeValueAsString(new SimplifiedMessageSocket(
+                            "Authentication required. Please send AUTH_RESPONSE first.",
+                            "ERROR",
+                            null))));
             return;
         }
 
         receivedMessage.setUserId(authenticatedUsers.get(session.getId()));
+        receivedMessage.setChatId(chatId); // Ensure chat ID is set correctly for internal use
 
-        logger.info("Message reçu de l'utilisateur " + receivedMessage.getUserId() + " ("
-                + receivedMessage.getUserId() + "): " + receivedMessage.getMessage());
+        logger.info("Message received from user " + receivedMessage.getUserId() + " in chat " + chatId + ": "
+                + receivedMessage.getMessage());
 
         if ("CHAT_MESSAGE".equals(receivedMessage.getType())) {
             handleChatMessage(session, receivedMessage);
@@ -85,123 +103,178 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
     }
 
-    private void handleAuthenticationResponse(WebSocketSession session, MessageSocket authMessage, ObjectMapper mapper)
-            throws IOException {
+    private void handleAuthenticationResponse(WebSocketSession session, MessageSocket authMessage,
+            ObjectMapper mapper, Integer chatId) throws IOException {
         Integer userId = authMessage.getUserId();
-        Integer chatId = authMessage.getChatId();
 
-        if (userId == null || chatId == null) {
-            session.sendMessage(
-                    new TextMessage(mapper.writeValueAsString(
-                            Map.of("type", "AUTH_FAILURE", "message",
-                                    "L'ID utilisateur et l'ID du chat sont requis."))));
-            session.close(CloseStatus.POLICY_VIOLATION.withReason("Données d'authentification invalides"));
-            sessions.remove(session);
+        if (userId == null) {
+            session.sendMessage(new TextMessage(
+                    mapper.writeValueAsString(new SimplifiedMessageSocket(
+                            "User ID is required.",
+                            "AUTH_FAILURE",
+                            null))));
+            session.close(CloseStatus.POLICY_VIOLATION.withReason("Invalid authentication data"));
+            removeChatSession(chatId, session);
             return;
         }
 
-        User user = userRepository.findById(userId.intValue()).orElse(null);
-        Chat chat = chatRepository.findById(chatId.intValue()).orElse(null);
+        User user = userRepository.findById(userId).orElse(null);
+        Chat chat = chatRepository.findById(chatId).orElse(null);
 
         if (user == null || chat == null) {
-            session.sendMessage(
-                    new TextMessage(mapper.writeValueAsString(
-                            Map.of("type", "AUTH_FAILURE", "message", "ID utilisateur ou ID de chat invalide."))));
-            session.close(CloseStatus.POLICY_VIOLATION.withReason("ID utilisateur/chat invalide"));
-            sessions.remove(session);
+            session.sendMessage(new TextMessage(
+                    mapper.writeValueAsString(new SimplifiedMessageSocket(
+                            "Invalid user ID or chat ID.",
+                            "AUTH_FAILURE",
+                            null))));
+            session.close(CloseStatus.POLICY_VIOLATION.withReason("Invalid user ID/chat ID"));
+            removeChatSession(chatId, session);
             return;
         }
 
-        // Check invitation: Find invitations by user, then check if any match the chat.
+        // Check invitation
         List<Invitation> userInvitations = invitationRepository.findByUser(user);
         boolean isInvited = userInvitations.stream().anyMatch(inv -> inv.getChat().getId() == chatId.intValue());
 
         if (!isInvited) {
-            logger.warn("Utilisateur " + userId + " non invité au chat " + chatId + ". Accès refusé.");
-            session.sendMessage(
-                    new TextMessage(mapper.writeValueAsString(
-                            Map.of("type", "AUTH_FAILURE", "message", "Non autorisé : Pas invité à ce chat."))));
-            session.close(CloseStatus.POLICY_VIOLATION.withReason("Non invité"));
-            sessions.remove(session);
+            logger.warn("User " + userId + " not invited to chat " + chatId + ". Access denied.");
+            session.sendMessage(new TextMessage(
+                    mapper.writeValueAsString(new SimplifiedMessageSocket(
+                            "Not authorized: Not invited to this chat.",
+                            "AUTH_FAILURE",
+                            null))));
+            session.close(CloseStatus.POLICY_VIOLATION.withReason("Not invited"));
+            removeChatSession(chatId, session);
             return;
         }
 
-        logger.info(
-                "Utilisateur " + userId + " (" + authMessage.getUserId() + ") authentifié avec succès pour la session "
-                        + session.getId() + " dans le chat " + chatId);
+        logger.info("User " + userId + " successfully authenticated for session "
+                + session.getId() + " in chat " + chatId);
         authenticatedUsers.put(session.getId(), userId);
 
-        session.sendMessage(
-                new TextMessage(mapper.writeValueAsString(
-                        Map.of("type", "AUTH_SUCCESS", "message",
-                                "Bienvenue à l'utilisateur " + authMessage.getUserId() + "!"))));
+        session.sendMessage(new TextMessage(
+                mapper.writeValueAsString(new SimplifiedMessageSocket(
+                        "Welcome user " + userId + " to chat " + chatId + "!",
+                        "AUTH_SUCCESS",
+                        userId))));
 
-        // Send message history to the newly authenticated user
-        for (MessageSocket historicalMessage : messageSocketsHistory) {
-            session.sendMessage(new TextMessage(mapper.writeValueAsString(historicalMessage)));
+        // Send message history (using SimplifiedMessageSocket)
+        List<MessageSocket> chatHistory = messageHistoryPerChat.getOrDefault(chatId, new ArrayList<>());
+        for (MessageSocket historicalMessage : chatHistory) {
+            SimplifiedMessageSocket simplified = SimplifiedMessageSocket.fromMessageSocket(historicalMessage);
+            session.sendMessage(new TextMessage(mapper.writeValueAsString(simplified)));
         }
 
         // Broadcast join message
-        broadcast(mapper.writeValueAsString(Map.of("type", "USER_JOIN", "userId", authMessage.getUserId(), "message",
-                "L'utilisateur " + authMessage.getUserId() + " a rejoint le chat.")));
+        broadcastToChat(chatId, mapper.writeValueAsString(new SimplifiedMessageSocket(
+                "User " + userId + " has joined the chat.",
+                "USER_JOIN",
+                userId)));
     }
 
-    private void handleChatMessage(WebSocketSession session, MessageSocket chatMessage)
-            throws IOException {
+    private void handleChatMessage(WebSocketSession session, MessageSocket chatMessage) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
+        Integer chatId = sessionChatIds.get(session.getId());
 
-        if (chatMessage.getChatId() == null) {
-            logger.warn("Message reçu de l'utilisateur " + chatMessage.getUserId() + " (session: " + session.getId()
-                    + ") sans chatId. Accès refusé.");
-            session.sendMessage(new TextMessage(mapper.writeValueAsString(
-                    Map.of("type", "ERROR", "message", "Chat ID requis."))));
-            return;
-        }
+        // Store the original message with chatId in history
+        messageHistoryPerChat.computeIfAbsent(chatId, k -> new ArrayList<>()).add(chatMessage);
 
-        messageSocketsHistory.add(chatMessage);
-        broadcast(mapper.writeValueAsString(chatMessage)); // Broadcast the original MessageSocket
+        // Broadcast simplified version
+        SimplifiedMessageSocket simplified = SimplifiedMessageSocket.fromMessageSocket(chatMessage);
+        broadcastToChat(chatId, mapper.writeValueAsString(simplified));
     }
 
     private void handleUnknownMessage(WebSocketSession session, MessageSocket unknownMessage) throws IOException {
-        logger.warn("Type de message inconnu reçu de l'utilisateur " + authenticatedUsers.get(session.getId()) + ": "
+        logger.warn("Unknown message type received from user " + authenticatedUsers.get(session.getId()) + ": "
                 + unknownMessage.getType());
-        session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(
-                Map.of("type", "ERROR", "message", "Type de message inconnu: " + unknownMessage.getType()))));
+        session.sendMessage(new TextMessage(
+                new ObjectMapper().writeValueAsString(new SimplifiedMessageSocket(
+                        "Unknown message type: " + unknownMessage.getType(),
+                        "ERROR",
+                        null))));
     }
 
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession session) throws IOException {
-        sessions.add(session);
-        logger.info("Nouvelle connexion : " + session.getId() + ". Demande d'authentification.");
+        Integer chatId = extractChatIdFromSession(session);
+        if (chatId == null) {
+            logger.error("Could not extract chat ID from URI: " + session.getUri());
+            session.close(CloseStatus.PROTOCOL_ERROR.withReason("Invalid chat ID in URL"));
+            return;
+        }
 
-        // Send authentication request to client
-        session.sendMessage(
-                new TextMessage(
-                        "{\"type\": \"AUTH_REQUEST\", \"message\": \"Veuillez envoyer votre userId et chatId.\"}"));
+        sessionChatIds.put(session.getId(), chatId);
+        chatSessions.computeIfAbsent(chatId, k -> new ArrayList<>()).add(session);
+
+        logger.info("New connection: " + session.getId() + " for chat " + chatId + ". Requesting authentication.");
+
+        session.sendMessage(new TextMessage(
+                "{\"type\": \"AUTH_REQUEST\", \"message\": \"Please send your userId to authenticate.\"}"));
     }
 
     @Override
     public void afterConnectionClosed(@NonNull WebSocketSession session, @NonNull CloseStatus status) {
-        // When the client quits, we remove its session
-        sessions.remove(session);
+        Integer chatId = sessionChatIds.remove(session.getId());
         Integer userId = authenticatedUsers.remove(session.getId());
-        if (userId != null) {
-            logger.info("Utilisateur " + userId + " (session: " + session.getId() + ") déconnecté.");
-            try {
-                this.broadcast(new ObjectMapper().writeValueAsString(Map.of("type", "USER_LEAVE", "userId", userId,
-                        "message", "L\'utilisateur " + userId + " est parti.")));
-            } catch (IOException e) {
-                logger.error("Erreur lors de la diffusion du message de départ pour l'utilisateur " + userId, e);
+
+        if (chatId != null) {
+            removeChatSession(chatId, session);
+
+            if (userId != null) {
+                logger.info("User " + userId + " (session: " + session.getId() + ") disconnected from chat " + chatId);
+                try {
+                    broadcastToChat(chatId, new ObjectMapper().writeValueAsString(new SimplifiedMessageSocket(
+                            "User " + userId + " has left the chat.",
+                            "USER_LEAVE",
+                            userId)));
+                } catch (IOException e) {
+                    logger.error("Error broadcasting departure message for user " + userId + " in chat " + chatId, e);
+                }
+            } else {
+                logger.info("Session " + session.getId() + " (unauthenticated) disconnected from chat " + chatId +
+                        " with status " + status.getCode());
             }
-        } else {
-            logger.info("Session " + session.getId() + " (non authentifiée) déconnectée avec le statut "
-                    + status.getCode());
         }
     }
 
-    public void broadcast(String message) throws IOException {
+    public void broadcastToChat(Integer chatId, String message) throws IOException {
+        List<WebSocketSession> sessions = chatSessions.getOrDefault(chatId, new ArrayList<>());
         for (WebSocketSession session : sessions) {
-            session.sendMessage(new TextMessage(message));
+            if (session.isOpen()) {
+                session.sendMessage(new TextMessage(message));
+            }
+        }
+    }
+
+    private void removeChatSession(Integer chatId, WebSocketSession session) {
+        List<WebSocketSession> sessions = chatSessions.get(chatId);
+        if (sessions != null) {
+            sessions.remove(session);
+            if (sessions.isEmpty()) {
+                chatSessions.remove(chatId);
+            }
+        }
+    }
+
+    private Integer extractChatIdFromSession(WebSocketSession session) {
+        try {
+            URI uri = session.getUri();
+            if (uri == null)
+                return null;
+
+            String path = uri.getPath();
+            String[] segments = path.split("/");
+            if (segments.length > 0) {
+                String lastSegment = segments[segments.length - 1];
+                return Integer.parseInt(lastSegment);
+            }
+            return null;
+        } catch (NumberFormatException e) {
+            logger.error("Invalid chat ID format in WebSocket URI", e);
+            return null;
+        } catch (Exception e) {
+            logger.error("Error extracting chat ID from WebSocket URI", e);
+            return null;
         }
     }
 }
