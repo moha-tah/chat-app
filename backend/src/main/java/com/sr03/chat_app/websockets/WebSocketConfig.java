@@ -20,6 +20,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(@NonNull WebSocketHandlerRegistry registry) {
-        registry.addHandler(webSocketHandler, "/channel").setAllowedOrigins("*");
+        registry.addHandler(webSocketHandler, "/channels/{chatId}")
+                .setAllowedOrigins("*");
     }
 }
