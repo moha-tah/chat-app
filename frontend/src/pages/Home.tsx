@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Header from "../components/shared/Header";
+import { Link } from "react-router-dom";
 
 function Home() {
   return (
@@ -18,19 +19,21 @@ function Home() {
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-6 text-lg"
           >
-            Commencer
+            <Link to={localStorage.getItem("user") ? "/chats" : "/login"}>
+              Commencer
+            </Link>
           </Button>
         </div>
       </main>
 
-      {/* Section Appel à l'action (CTA) */}
       <section className="py-8 sm:py-12 bg-blue-600">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h3 className="text-4xl font-bold text-white mb-6 tracking-tight">
             Projet réalisé par Mohamed Tahiri et Ismat Abou Khafche.
           </h3>
           <p className="text-white text-lg sm:text-xl max-w-2xl mx-auto">
-            Backend en Java, Frontend en React, Base de données en PostgreSQL.
+            Backend en Java (SpringBoot), Frontend en React (Vite), base de
+            données en PostgreSQL.
           </p>
         </div>
       </section>

@@ -33,7 +33,7 @@ export default function Header() {
               </span>
               <Button
                 variant="ghost"
-                className="bg-blue-600 hover:bg-blue-700 text-white mx-2"
+                className="bg-blue-600 hover:bg-blue-700 hover:text-white text-white mx-2"
               >
                 <Link to="/chats">Mes chats</Link>
               </Button>
