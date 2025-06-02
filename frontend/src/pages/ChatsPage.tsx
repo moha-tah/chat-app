@@ -1,21 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "../components/shared/Header";
 import type { Chat } from "../types/Chat";
 import { ChatsList, ChatArea, type TempMessage } from "../components/chats";
+import type { ChatData } from "@/components/chats/CreateChat";
+import { toast } from "sonner";
+import { BACKEND_URL } from "@/lib/constants";
 
 const ChatsPage: React.FC = () => {
-  const mockInitialChats: Chat[] = [
-    {
-      id: 1,
-      title: "Groupe SR03",
-      description: "Discussion sur le projet de fin d'année",
-      date: new Date(),
-      duration: 30,
-      invitations: [],
-    },
-  ];
-
-  const initialMessages: TempMessage[] = [
+  const mockInitialMessages: TempMessage[] = [
     { id: "m1", sender: "Ismat", text: "Salut !" },
     {
       id: "m2",
@@ -32,22 +24,54 @@ const ChatsPage: React.FC = () => {
     { id: "m6", sender: "Ismat", text: "Nickel !!!" },
   ];
 
-  const [chats, _setChats] = useState<Chat[]>(mockInitialChats);
-  const [messages, setMessages] = useState<TempMessage[]>(initialMessages);
-  const [selectedDiscussion, setSelectedDiscussion] = useState<Chat | null>(
-    null
-  );
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [messages, setMessages] = useState<TempMessage[]>(mockInitialMessages);
+  const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
   const [currentMessage, setCurrentMessage] = useState<string>("");
 
-  const isChatOpen = (chat: Chat): boolean => {
-    const now = Date.now();
-    const chatStartTime = new Date(chat.date).getTime();
-    const minutesPassed = (now - chatStartTime) / (1000 * 60);
-    return minutesPassed < chat.duration;
+  useEffect(() => {
+    const fetchChats = async () => {
+      const response = await fetch(`${BACKEND_URL}/chats`); // TODO:Fetch only my chats
+
+      if (!response.ok) {
+        toast.error(
+          "Erreur pour récupérer les chats : " + (await response.text())
+        );
+        return;
+      }
+
+      const data = await response.json();
+      setChats(data);
+    };
+
+    fetchChats();
+  }, []);
+
+  const handleSelectChat = (chat: Chat) => {
+    setSelectedChat(chat);
   };
 
-  const handleSelectDiscussion = (discussion: Chat) => {
-    setSelectedDiscussion(discussion);
+  const handleCreateChat = async (chatData: ChatData) => {
+    try {
+      const response = await fetch(`${BACKEND_URL}/chats`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(chatData),
+      });
+
+      if (!response.ok) {
+        toast.error("Erreur pour créer le chat : " + (await response.text()));
+        return;
+      }
+
+      const newChat: Chat = await response.json();
+
+      setChats((prevChats) => [...prevChats, newChat]);
+    } catch (error) {
+      toast.error("Erreur pour créer le chat : " + error);
+    }
   };
 
   const handleSendMessage = () => {
@@ -73,12 +97,12 @@ const ChatsPage: React.FC = () => {
       <div className="flex flex-grow overflow-hidden">
         <ChatsList
           chats={chats}
-          selectedChat={selectedDiscussion}
-          onSelectChat={handleSelectDiscussion}
-          isChatOpen={isChatOpen}
+          selectedChat={selectedChat}
+          onSelectChat={handleSelectChat}
+          onCreateChat={handleCreateChat}
         />
         <ChatArea
-          selectedChat={selectedDiscussion}
+          selectedChat={selectedChat}
           messages={messages}
           currentMessage={currentMessage}
           onMessageChange={handleMessageChange}

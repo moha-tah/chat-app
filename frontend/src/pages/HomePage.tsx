@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import Header from "../components/shared/Header";
 import { Link } from "react-router-dom";
 
-function Home() {
+function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-slate-800 text-white">
       <Header />
@@ -45,4 +45,4 @@ function Home() {
   );
 }
 
-export default Home;
+export default HomePage;
