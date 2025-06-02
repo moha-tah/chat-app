@@ -27,6 +27,11 @@ public class UserController {
         return userService.getAllUsers();
     }
 
+    @GetMapping("/active")
+    public List<User> getAllActiveUsers() {
+        return userService.getAllActiveUsers();
+    }
+
     @PostMapping("/login")
     public User login(@RequestBody LoginDto loginDto) {
         return userService.login(loginDto);

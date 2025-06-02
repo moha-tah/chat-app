@@ -14,6 +14,7 @@ import com.sr03.chat_app.exceptions.DuplicateEmailException;
 import com.sr03.chat_app.exceptions.InvalidCredentialsException;
 import com.sr03.chat_app.exceptions.PasswordStrengthException;
 import com.sr03.chat_app.exceptions.UserNotFoundException;
+import com.sr03.chat_app.security.UnauthorizedAdminAccessException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -52,5 +53,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(PasswordStrengthException.class)
     public ResponseEntity<Object> handlePasswordStrengthException(PasswordStrengthException ex, WebRequest request) {
         return buildErrorResponse(ex, HttpStatus.BAD_REQUEST, request); // 400
+    }
+
+    @ExceptionHandler(UnauthorizedAdminAccessException.class)
+    public ResponseEntity<Object> handleUnauthorizedAdminAccessException(UnauthorizedAdminAccessException ex,
+            WebRequest request) {
+        return buildErrorResponse(ex, HttpStatus.UNAUTHORIZED, request); // 401
     }
 }

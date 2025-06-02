@@ -49,6 +49,10 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public List<User> getAllActiveUsers() {
+        return userRepository.findByIsActive(true);
+    }
+
     public User login(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail())
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec cet email."));
