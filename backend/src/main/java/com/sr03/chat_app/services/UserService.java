@@ -12,6 +12,10 @@ import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.repositories.UserRepository;
 import com.sr03.chat_app.security.RequiresAdmin;
 import com.sr03.chat_app.utils.Utils;
+import com.sr03.chat_app.exceptions.DuplicateEmailException;
+import com.sr03.chat_app.exceptions.InvalidCredentialsException;
+import com.sr03.chat_app.exceptions.PasswordStrengthException;
+import com.sr03.chat_app.exceptions.UserNotFoundException;
 
 @Service
 public class UserService {
@@ -23,7 +27,7 @@ public class UserService {
         checkPasswordStrength(createUserDto.getPassword());
 
         if (userRepository.findByEmail(createUserDto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Un utilisateur avec cet email existe déjà.");
+            throw new DuplicateEmailException("Un utilisateur avec cet email existe déjà.");
         }
 
         String passwordSalt = UUID.randomUUID().toString();
@@ -47,10 +51,10 @@ public class UserService {
 
     public User login(LoginDto loginDto) {
         User user = userRepository.findByEmail(loginDto.getEmail())
-                .orElseThrow(() -> new IllegalArgumentException("Utilisateur non trouvé avec cet email."));
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé avec cet email."));
 
         if (!Utils.verifyPassword(loginDto.getPassword(), user.getPasswordSalt(), user.getPasswordHash())) {
-            throw new IllegalArgumentException("Mot de passe incorrect.");
+            throw new InvalidCredentialsException("Mot de passe incorrect.");
         }
 
         return user;
@@ -106,7 +110,7 @@ public class UserService {
 
     private void checkUserExists(int id) {
         if (!userRepository.existsById(id)) {
-            throw new IllegalArgumentException("L'utilisateur avec l'ID " + id + " n'existe pas.");
+            throw new UserNotFoundException("L'utilisateur avec l'ID " + id + " n'existe pas.");
         }
     }
 
@@ -116,12 +120,12 @@ public class UserService {
 
     private User getUserOrThrow(int id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("L'utilisateur avec l'ID " + id + " n'existe pas."));
+                .orElseThrow(() -> new UserNotFoundException("L'utilisateur avec l'ID " + id + " n'existe pas."));
     }
 
     private void checkPasswordStrength(String password) {
         if (!Utils.isPasswordStrong(password)) {
-            throw new IllegalArgumentException(
+            throw new PasswordStrengthException(
                     "Le mot de passe doit contenir au moins " + Utils.MIN_PASSWORD_LENGTH
                             + " caractères, " + Utils.MIN_SPECIAL_CHARACTERS
                             + " caractères spéciaux, " + Utils.MIN_NUMBERS + " nombres and "
