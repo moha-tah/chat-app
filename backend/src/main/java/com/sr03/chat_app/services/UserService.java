@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.sr03.chat_app.dtos.SignupDto;
 
 import com.sr03.chat_app.dtos.LoginDto;
 import com.sr03.chat_app.dtos.UserDto;
@@ -40,6 +41,29 @@ public class UserService {
                 passwordHash,
                 passwordSalt,
                 createUserDto.isAdmin());
+
+        return userRepository.save(user);
+    }
+
+    public User signupUser(SignupDto dto) {
+        checkPasswordStrength(dto.getPassword());
+
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            throw new DuplicateEmailException("Un utilisateur avec cet email existe déjà.");
+        }
+
+        String salt = UUID.randomUUID().toString();
+        String hash = Utils.hashPassword(dto.getPassword(), salt);
+
+        User user = new User(
+                dto.getLastName(),
+                dto.getFirstName(),
+                dto.getEmail(),
+                hash,
+                salt,
+                false // isAdmin
+        );
+        user.setActive(false);
 
         return userRepository.save(user);
     }
