@@ -7,6 +7,15 @@ public class UserDto {
     private String password;
     private boolean isActive;
     private boolean isAdmin;
+    private String avatarUrl;
+
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
     public String getFirstName() {
         return firstName;

@@ -1,5 +1,4 @@
 package com.sr03.chat_app.models;
-
 import jakarta.persistence.*;
 
 import java.util.HashSet;
@@ -48,9 +47,10 @@ public class User {
     public User() {
         // No-arg constructor needed by JPA
     }
+    @Column(nullable = true)
+    private String avatarUrl;
 
-    public User(String lastName, String firstName, String email, String passwordHash, String passwordSalt,
-            boolean isAdmin) {
+    public User(String lastName, String firstName, String email, String passwordHash, String passwordSalt, boolean isAdmin) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.email = email;
@@ -60,6 +60,13 @@ public class User {
     }
 
     // === Getters and Setters ===
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
+    }
 
     public int getId() {
         return id;

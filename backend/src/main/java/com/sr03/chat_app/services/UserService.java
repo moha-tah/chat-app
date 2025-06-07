@@ -1,12 +1,9 @@
 package com.sr03.chat_app.services;
-
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.sr03.chat_app.dtos.SignupDto;
-
 import com.sr03.chat_app.dtos.LoginDto;
 import com.sr03.chat_app.dtos.UserDto;
 import com.sr03.chat_app.models.User;
@@ -40,7 +37,11 @@ public class UserService {
                 createUserDto.getEmail(),
                 passwordHash,
                 passwordSalt,
-                createUserDto.isAdmin());
+                createUserDto.isAdmin()
+        );
+
+        // Avatar (optionnel)
+        user.setAvatarUrl(createUserDto.getAvatarUrl());
 
         return userRepository.save(user);
     }
@@ -63,8 +64,11 @@ public class UserService {
                 salt,
                 false // isAdmin
         );
-        user.setActive(false);
 
+        // Avatar (optionnel)
+        user.setAvatarUrl(dto.getAvatarUrl());
+
+        user.setActive(false);
         return userRepository.save(user);
     }
 
@@ -107,6 +111,9 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setActive(userDto.isActive());
         user.setAdmin(userDto.isAdmin());
+
+        // Nouveau champ
+        user.setAvatarUrl(userDto.getAvatarUrl());
 
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
             checkPasswordStrength(userDto.getPassword());
