@@ -1,14 +1,13 @@
 package com.sr03.chat_app.controllers;
-
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.services.UserService;
 import com.sr03.chat_app.dtos.LoginDto;
 import com.sr03.chat_app.dtos.UserDto;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+import com.sr03.chat_app.dtos.SignupDto;
+
 
 @RestController
 @RequestMapping("users")
@@ -37,6 +36,11 @@ public class UserController {
         return userService.login(loginDto);
     }
 
+    @PostMapping("/signup")
+    public User signup(@RequestBody SignupDto signupDto) {
+        return userService.signupUser(signupDto);
+    }
+
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
         return userService.getUserById(id);
@@ -61,4 +65,6 @@ public class UserController {
     public void deactivateUser(@PathVariable int id) {
         userService.deactivateUser(id);
     }
+
+
 }

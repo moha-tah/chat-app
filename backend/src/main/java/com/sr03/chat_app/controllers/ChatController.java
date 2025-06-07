@@ -1,12 +1,9 @@
 package com.sr03.chat_app.controllers;
-
 import com.sr03.chat_app.dtos.ChatDto;
 import com.sr03.chat_app.models.Chat;
 import com.sr03.chat_app.services.ChatService;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -36,3 +33,6 @@ public class ChatController {
         return chatService.updateChat(id, chatDto);
     }
 }
+
+
+
