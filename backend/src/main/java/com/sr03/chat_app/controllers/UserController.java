@@ -4,9 +4,11 @@ import com.sr03.chat_app.services.UserService;
 import com.sr03.chat_app.dtos.LoginDto;
 import com.sr03.chat_app.dtos.UserDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.sr03.chat_app.dtos.SignupDto;
+import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
@@ -37,10 +39,9 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public User signup(@RequestBody SignupDto signupDto) {
-        return userService.signupUser(signupDto);
+    public User signup(@RequestPart("userData") SignupDto signupDto, @RequestPart(value = "avatar", required = false) MultipartFile avatarFile) {
+        return userService.signupUser(signupDto, avatarFile);
     }
-
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
         return userService.getUserById(id);
@@ -64,6 +65,16 @@ public class UserController {
     @PatchMapping("/{id}/deactivate")
     public void deactivateUser(@PathVariable int id) {
         userService.deactivateUser(id);
+    }
+
+    @PostMapping("/{id}/avatar")
+    public ResponseEntity<String> uploadAvatar(@PathVariable int id, @RequestParam("file") MultipartFile file) {
+        try {
+            String avatarUrl = userService.storeAvatar(id, file);
+            return ResponseEntity.ok(avatarUrl);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Erreur: " + e.getMessage());
+        }
     }
 
 

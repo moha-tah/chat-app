@@ -47,7 +47,7 @@ public class User {
     public User() {
         // No-arg constructor needed by JPA
     }
-    @Column(nullable = true)
+    @Column(name = "avatar_url"  , nullable = true)
     private String avatarUrl;
 
     public User(String lastName, String firstName, String email, String passwordHash, String passwordSalt, boolean isAdmin) {
