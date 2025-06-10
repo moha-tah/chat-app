@@ -11,11 +11,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Link } from "react-router-dom";
 import Header from "../shared/Header";
-import { useState, useEffect } from "react";
+import {useState, useEffect, useRef} from "react";
 import { Eye, EyeOff, X, Check } from "lucide-react";
+import { User as UserIcon } from "lucide-react"; // Renamed to avoid conflict
 import { BACKEND_URL } from "@/lib/constants";
 import { toast } from "sonner";
-import type { User } from "@/types/User";
+import type { User } from "@/types/User"; // Your custom User type
 
 import {
   EMAIL_REGEX,
@@ -31,6 +32,9 @@ export default function SignupForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [passwordStrength, setPasswordStrength] = useState(0);
   const [passwordCriteria, setPasswordCriteria] = useState({
@@ -40,33 +44,88 @@ export default function SignupForm() {
     number: false,
   });
 
+  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+
+      // Validate file type
+      if (!file.type.match('image.*')) {
+        toast.error("Veuillez sélectionner une image valide");
+        return;
+      }
+
+      // Validate file size (e.g., 5MB max)
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("L'image ne doit pas dépasser 5MB");
+        return;
+      }
+
+      setAvatar(file);
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setAvatarPreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeAvatar = () => {
+    setAvatar(null);
+    setAvatarPreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
+    if (password !== confirmPassword) {
+      toast.error("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
     try {
+      // Préparation des données utilisateur
+      const userData = {
+        firstName,
+        lastName,
+        email,
+        password,
+      };
+
+      // Préparation de FormData
+      const formData = new FormData();
+      formData.append("userData", new Blob([JSON.stringify(userData)], { type: "application/json" }));
+
+      if (avatar) {
+        formData.append("avatar", avatar);
+      }
+
+      // Envoi de la requête
       const response = await fetch(`${BACKEND_URL}/users/signup`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password, firstName, lastName }),
+        body: formData,
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        console.log(errorData);
         toast.error(errorData.message || "Erreur lors de l'inscription.");
         return;
       }
 
       const data: User = await response.json();
+
       localStorage.setItem("user", JSON.stringify(data));
       window.location.href = "/";
     } catch (error) {
-      console.log(error);
+      console.error(error);
       toast.error("Une erreur est survenue lors de l'inscription.");
     }
   };
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
@@ -163,6 +222,46 @@ export default function SignupForm() {
             </CardHeader>
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-4">
+                {/* Avatar Upload */}
+                <div className="space-y-2">
+                  <Label htmlFor="avatar" className="text-slate-300">
+                    Photo de profil (optionnel)
+                  </Label>
+                  <div className="flex items-center gap-4">
+                    {avatarPreview ? (
+                        <div className="relative">
+                          <img
+                              src={avatarPreview}
+                              alt="Avatar preview"
+                              className="w-16 h-16 rounded-full object-cover"
+                          />
+                          <button
+                              type="button"
+                              onClick={removeAvatar}
+                              className="absolute -top-2 -right-2 bg-red-500 rounded-full p-1"
+                          >
+                            <X size={16} className="text-white" />
+                          </button>
+                        </div>
+                    ) : (
+                        <div className="w-16 h-16 rounded-full bg-slate-700 flex items-center justify-center">
+                          <UserIcon  className="text-slate-400" size={24} />
+                        </div>
+                    )}
+                    <div className="flex-1">
+                      <Input
+                          id="avatar"
+                          type="file"
+                          accept="image/*"
+                          ref={fileInputRef}
+                          onChange={handleAvatarChange}
+                          className="bg-slate-700 border-slate-600 text-white file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-blue-500 file:text-white hover:file:bg-blue-600"
+                      />
+                      <p className="text-xs text-slate-400 mt-1">Formats supportés: JPG, PNG. Max 5MB</p>
+                    </div>
+                  </div>
+                </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="firstName" className="text-slate-300">
                     Prénom
