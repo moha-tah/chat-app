@@ -101,5 +101,5 @@ export const useWebSocket = (chatId: number | null) => {
     }
   };
 
-  return { messages, isConnected, sendMessage };
+  return { messages, isConnected, sendMessage, setMessages };
 };

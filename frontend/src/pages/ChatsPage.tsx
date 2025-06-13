@@ -20,11 +20,13 @@ const ChatsPage: React.FC = () => {
   const [chats, setChats] = useState<Chat[]>([]);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
 
-  const { messages, sendMessage } = useWebSocket(selectedChat?.id ?? null);
+  const { messages, setMessages, sendMessage } = useWebSocket(
+    selectedChat?.id ?? null
+  );
 
   useEffect(() => {
     const fetchChats = async () => {
-      const response = await fetch(`${BACKEND_URL}/chats`); // TODO:Fetch only my chats
+      const response = await fetch(`${BACKEND_URL}/chats`); // TODO: Fetch only my chats
 
       if (!response.ok) {
         toast.error(
@@ -42,6 +44,7 @@ const ChatsPage: React.FC = () => {
 
   const handleSelectChat = (chat: Chat) => {
     setSelectedChat(chat);
+    setMessages([]);
   };
 
   const handleCreateChat = async (chatData: ChatData) => {

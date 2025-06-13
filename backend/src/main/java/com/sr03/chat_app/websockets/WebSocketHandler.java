@@ -135,12 +135,13 @@ public class WebSocketHandler extends TextWebSocketHandler {
         // Check invitation
         List<Invitation> userInvitations = invitationRepository.findByUser(user);
         boolean isInvited = userInvitations.stream().anyMatch(inv -> inv.getChat().getId() == chatId.intValue());
+        boolean isCreator = chat.getCreator().getId() == userId.intValue();
 
-        if (!isInvited) {
+        if (!isInvited && !isCreator) {
             logger.warn("User " + userId + " not invited to chat " + chatId + ". Access denied.");
             session.sendMessage(new TextMessage(
                     mapper.writeValueAsString(new SimplifiedMessageSocket(
-                            "Not authorized: Not invited to this chat.",
+                            "Tu n'es pas invité dans ce chat.",
                             "AUTH_FAILURE",
                             null))));
             session.close(CloseStatus.POLICY_VIOLATION.withReason("Not invited"));
@@ -154,7 +155,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         session.sendMessage(new TextMessage(
                 mapper.writeValueAsString(new SimplifiedMessageSocket(
-                        "Welcome user " + userId + " to chat " + chatId + "!",
+                        "Bienvenue dans le chat " + chatId + "!",
                         "AUTH_SUCCESS",
                         userId))));
 
@@ -189,7 +190,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 + unknownMessage.getType());
         session.sendMessage(new TextMessage(
                 new ObjectMapper().writeValueAsString(new SimplifiedMessageSocket(
-                        "Unknown message type: " + unknownMessage.getType(),
+                        "Type de message inconnu : " + unknownMessage.getType(),
                         "ERROR",
                         null))));
     }
@@ -199,7 +200,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         Integer chatId = extractChatIdFromSession(session);
         if (chatId == null) {
             logger.error("Could not extract chat ID from URI: " + session.getUri());
-            session.close(CloseStatus.PROTOCOL_ERROR.withReason("Invalid chat ID in URL"));
+            session.close(CloseStatus.PROTOCOL_ERROR.withReason("ID de chat invalide"));
             return;
         }
 
