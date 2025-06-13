@@ -1,9 +1,9 @@
 import React, { useRef, useEffect } from "react";
 import MessageItem from "./MessageItem";
-import type { TempMessage } from "./types";
+import type { WebSocketMessage } from "@/hooks";
 
 interface MessagesAreaProps {
-  messages: TempMessage[];
+  messages: WebSocketMessage[];
 }
 
 const MessagesArea: React.FC<MessagesAreaProps> = ({ messages }) => {
@@ -19,8 +19,8 @@ const MessagesArea: React.FC<MessagesAreaProps> = ({ messages }) => {
 
   return (
     <div className="flex-1 overflow-y-auto p-4 space-y-4 max-h-[calc(100vh-255px)]">
-      {messages.map((message) => (
-        <MessageItem key={message.id} message={message} />
+      {messages.map((message, index) => (
+        <MessageItem key={index} message={message} />
       ))}
       <div ref={messagesEndRef} />
     </div>

@@ -1,33 +1,26 @@
 import React, { useEffect, useState } from "react";
 import Header from "../components/shared/Header";
 import type { Chat } from "../types/Chat";
-import { ChatsList, ChatArea, type TempMessage } from "../components/chats";
+import { ChatsList, ChatArea } from "../components/chats";
 import type { ChatData } from "@/components/chats/CreateChat";
 import { toast } from "sonner";
 import { BACKEND_URL } from "@/lib/constants";
+import { useWebSocket } from "@/hooks";
 
 const ChatsPage: React.FC = () => {
-  const mockInitialMessages: TempMessage[] = [
-    { id: "m1", sender: "Ismat", text: "Salut !" },
-    {
-      id: "m2",
-      sender: "Mohamed",
-      text: "Saaluttt !!!",
-    },
-    { id: "m3", sender: "Mohamed", text: "😄" },
-    {
-      id: "m4",
-      sender: "Ismat",
-      text: "Ça va ?",
-    },
-    { id: "m5", sender: "Mohamed", text: "Ouais et toi ?" },
-    { id: "m6", sender: "Ismat", text: "Nickel !!!" },
-  ];
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (!storedUser) {
+      window.location.href = "/";
+      toast.error("Veuillez vous connecter pour accéder aux chats.");
+      return;
+    }
+  }, []);
 
   const [chats, setChats] = useState<Chat[]>([]);
-  const [messages, setMessages] = useState<TempMessage[]>(mockInitialMessages);
   const [selectedChat, setSelectedChat] = useState<Chat | null>(null);
-  const [currentMessage, setCurrentMessage] = useState<string>("");
+
+  const { messages, sendMessage } = useWebSocket(selectedChat?.id ?? null);
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -74,23 +67,6 @@ const ChatsPage: React.FC = () => {
     }
   };
 
-  const handleSendMessage = () => {
-    if (currentMessage.trim() === "") return;
-
-    const newMessage: TempMessage = {
-      id: `m${Date.now()}`,
-      sender: "Mohamed",
-      text: currentMessage.trim(),
-    };
-
-    setMessages([...messages, newMessage]);
-    setCurrentMessage("");
-  };
-
-  const handleMessageChange = (message: string) => {
-    setCurrentMessage(message);
-  };
-
   return (
     <div className="flex flex-col min-h-screen bg-slate-800 text-white">
       <Header />
@@ -104,9 +80,7 @@ const ChatsPage: React.FC = () => {
         <ChatArea
           selectedChat={selectedChat}
           messages={messages}
-          currentMessage={currentMessage}
-          onMessageChange={handleMessageChange}
-          onSendMessage={handleSendMessage}
+          onSendMessage={sendMessage}
         />
       </div>
     </div>

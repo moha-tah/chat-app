@@ -167,7 +167,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         // Broadcast join message
         broadcastToChat(chatId, mapper.writeValueAsString(new SimplifiedMessageSocket(
-                "User " + userId + " has joined the chat.",
+                "L'utilisateur " + userId + " a rejoint le chat.",
                 "USER_JOIN",
                 userId)));
     }
@@ -221,10 +221,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
             removeChatSession(chatId, session);
 
             if (userId != null) {
-                logger.info("User " + userId + " (session: " + session.getId() + ") disconnected from chat " + chatId);
+                logger.info(
+                        "L'utilisateur " + userId + " (session: " + session.getId() + ") a quitté le chat " + chatId);
                 try {
                     broadcastToChat(chatId, new ObjectMapper().writeValueAsString(new SimplifiedMessageSocket(
-                            "User " + userId + " has left the chat.",
+                            "L'utilisateur " + userId + " a quitté le chat.",
                             "USER_LEAVE",
                             userId)));
                 } catch (IOException e) {

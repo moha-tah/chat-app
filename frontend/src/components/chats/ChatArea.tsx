@@ -1,23 +1,19 @@
 import React from "react";
 import type { Chat } from "../../types/Chat";
-import type { TempMessage } from "./types";
 import ChatHeader from "./ChatHeader";
 import MessagesArea from "./MessagesArea";
 import MessageInput from "./MessageInput";
+import type { WebSocketMessage } from "@/hooks";
 
 interface ChatAreaProps {
   selectedChat: Chat | null;
-  messages: TempMessage[];
-  currentMessage: string;
-  onMessageChange: (message: string) => void;
-  onSendMessage: () => void;
+  messages: WebSocketMessage[];
+  onSendMessage: (message: string) => void;
 }
 
 const ChatArea: React.FC<ChatAreaProps> = ({
   selectedChat,
   messages,
-  currentMessage,
-  onMessageChange,
   onSendMessage,
 }) => {
   if (!selectedChat) {
@@ -34,11 +30,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     <div className="flex-1 flex flex-col bg-slate-800">
       <ChatHeader chat={selectedChat} />
       <MessagesArea messages={messages} />
-      <MessageInput
-        currentMessage={currentMessage}
-        onMessageChange={onMessageChange}
-        onSendMessage={onSendMessage}
-      />
+      <MessageInput onSendMessage={onSendMessage} />
     </div>
   );
 };

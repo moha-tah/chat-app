@@ -26,9 +26,11 @@ import SelectUsers from "./SelectUsers";
 const formSchema = z.object({
   title: z.string().min(1, "Le titre est requis"),
   description: z.string().min(1, "La description est requise"),
-  date: z.string().refine((val) => new Date(val) >= new Date(), {
-    message: "La date ne peut pas être dans le passé",
-  }),
+  date: z
+    .string()
+    .refine((val) => new Date(val) >= new Date(Date.now() - 60 * 1000), {
+      message: "La date ne peut pas être dans le passé",
+    }),
   duration: z.coerce
     .number({ message: "La durée est requise" })
     .min(5, "La durée doit être d'au moins 5 minutes")

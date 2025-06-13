@@ -1,21 +1,20 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Send } from "lucide-react";
 
 interface MessageInputProps {
-  currentMessage: string;
-  onMessageChange: (message: string) => void;
-  onSendMessage: () => void;
+  onSendMessage: (message: string) => void;
 }
 
-const MessageInput: React.FC<MessageInputProps> = ({
-  currentMessage,
-  onMessageChange,
-  onSendMessage,
-}) => {
+const MessageInput: React.FC<MessageInputProps> = ({ onSendMessage }) => {
+  const [currentMessage, setCurrentMessage] = useState("");
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onSendMessage();
+    if (currentMessage.trim()) {
+      onSendMessage(currentMessage.trim());
+      setCurrentMessage("");
+    }
   };
 
   return (
@@ -26,11 +25,12 @@ const MessageInput: React.FC<MessageInputProps> = ({
           placeholder="Ton message..."
           className="flex-grow p-2 pl-4 bg-slate-600 rounded-full focus:outline-none text-slate-100 placeholder-slate-400"
           value={currentMessage}
-          onChange={(e) => onMessageChange(e.target.value)}
+          onChange={(e) => setCurrentMessage(e.target.value)}
         />
         <Button
           type="submit"
           className="ml-2 p-2 rounded-full bg-blue-600 hover:bg-blue-700"
+          disabled={!currentMessage.trim()}
         >
           <Send className="w-4 h-4" />
         </Button>
