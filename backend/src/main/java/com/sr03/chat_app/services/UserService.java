@@ -43,9 +43,6 @@ public class UserService {
                 createUserDto.isAdmin()
         );
 
-        // Avatar (optionnel)
-        user.setAvatarUrl(createUserDto.getAvatarUrl());
-
         return userRepository.save(user);
     }
 
@@ -69,16 +66,14 @@ public class UserService {
         );
 
         user.setActive(false);
-
-        // On enregistre d'abord l'utilisateur pour obtenir son ID
+        // save user to get its id
         User savedUser = userRepository.save(user);
 
-        // Ensuite, on gère l'avatar s'il existe
         if (avatarFile != null && !avatarFile.isEmpty()) {
             try {
                 String avatarUrl = storeAvatar(savedUser.getId(), avatarFile);
                 savedUser.setAvatarUrl(avatarUrl);
-                userRepository.save(savedUser); // On met à jour l'utilisateur avec l'avatar
+                userRepository.save(savedUser); // Update the user with the avatar
             } catch (IOException e) {
                 throw new RuntimeException("Erreur lors du stockage de l'avatar", e);
             }
@@ -131,8 +126,6 @@ public class UserService {
         user.setActive(userDto.isActive());
         user.setAdmin(userDto.isAdmin());
 
-        // Nouveau champ
-        user.setAvatarUrl(userDto.getAvatarUrl());
 
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
             checkPasswordStrength(userDto.getPassword());
