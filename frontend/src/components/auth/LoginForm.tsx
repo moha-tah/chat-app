@@ -42,6 +42,7 @@ export default function LoginForm() {
 
       const data: User = await response.json();
       localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("userEmail", email);
       window.location.href = "/";
     } catch (error) {
       console.log(error);

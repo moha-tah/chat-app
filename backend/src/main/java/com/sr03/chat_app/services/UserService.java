@@ -1,12 +1,10 @@
 package com.sr03.chat_app.services;
-
+import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.sr03.chat_app.dtos.SignupDto;
-
 import com.sr03.chat_app.dtos.LoginDto;
 import com.sr03.chat_app.dtos.UserDto;
 import com.sr03.chat_app.models.User;
@@ -17,6 +15,8 @@ import com.sr03.chat_app.exceptions.DuplicateEmailException;
 import com.sr03.chat_app.exceptions.InvalidCredentialsException;
 import com.sr03.chat_app.exceptions.PasswordStrengthException;
 import com.sr03.chat_app.exceptions.UserNotFoundException;
+import org.springframework.web.multipart.MultipartFile;
+import java.nio.file.*;
 
 @Service
 public class UserService {
@@ -40,12 +40,13 @@ public class UserService {
                 createUserDto.getEmail(),
                 passwordHash,
                 passwordSalt,
-                createUserDto.isAdmin());
+                createUserDto.isAdmin()
+        );
 
         return userRepository.save(user);
     }
 
-    public User signupUser(SignupDto dto) {
+    public User signupUser(SignupDto dto, MultipartFile avatarFile) {
         checkPasswordStrength(dto.getPassword());
 
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
@@ -61,11 +62,24 @@ public class UserService {
                 dto.getEmail(),
                 hash,
                 salt,
-                false // isAdmin
+                false
         );
-        user.setActive(false);
 
-        return userRepository.save(user);
+        user.setActive(false);
+        // save user to get its id
+        User savedUser = userRepository.save(user);
+
+        if (avatarFile != null && !avatarFile.isEmpty()) {
+            try {
+                String avatarUrl = storeAvatar(savedUser.getId(), avatarFile);
+                savedUser.setAvatarUrl(avatarUrl);
+                userRepository.save(savedUser); // Update the user with the avatar
+            } catch (IOException e) {
+                throw new RuntimeException("Erreur lors du stockage de l'avatar", e);
+            }
+        }
+
+        return savedUser;
     }
 
     @RequiresAdmin
@@ -99,6 +113,10 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
+
     @RequiresAdmin
     public User updateUser(int id, UserDto userDto) {
         User user = getUserOrThrow(id);
@@ -107,6 +125,7 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setActive(userDto.isActive());
         user.setAdmin(userDto.isAdmin());
+
 
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
             checkPasswordStrength(userDto.getPassword());
@@ -160,4 +179,22 @@ public class UserService {
                             + Utils.MIN_UPPERCASE_LETTERS + " majuscules.");
         }
     }
+
+    public String storeAvatar(int userId, MultipartFile file) throws IOException {
+        User user = getUserOrThrow(userId);
+
+        String uploadsDir = "uploads/";
+        Files.createDirectories(Paths.get(uploadsDir)); // ensures the dir exists
+
+        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+        Path filePath = Paths.get(uploadsDir, fileName);
+        Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+        String avatarUrl = "/uploads/" + fileName;
+        user.setAvatarUrl(avatarUrl);
+        userRepository.save(user);
+
+        return avatarUrl;
+    }
+
 }

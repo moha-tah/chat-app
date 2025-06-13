@@ -7,6 +7,8 @@ public class UserDto {
     private String password;
     private boolean isActive;
     private boolean isAdmin;
+    private String avatarUrl;
+
 
     public String getFirstName() {
         return firstName;

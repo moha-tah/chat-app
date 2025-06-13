@@ -6,8 +6,8 @@ public class SignupDto {
     private String lastName;
     private String email;
     private String password;
+    private String avatarUrl;
 
-    // Constructors
     public SignupDto() {}
 
     public SignupDto(String firstName, String lastName, String email, String password) {
@@ -15,9 +15,17 @@ public class SignupDto {
         this.lastName = lastName;
         this.email = email;
         this.password = password;
+        this.avatarUrl = null;
     }
 
-    // Getters
+    public SignupDto(String firstName, String lastName, String email, String password, String avatarUrl) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.password = password;
+        this.avatarUrl = avatarUrl;
+    }
+
     public String getFirstName() {
         return firstName;
     }
@@ -34,7 +42,10 @@ public class SignupDto {
         return password;
     }
 
-    // Setters
+    public String getAvatarUrl() {
+        return avatarUrl;
+    }
+
     public void setFirstName(String firstName) {
         this.firstName = firstName;
     }
@@ -49,5 +60,9 @@ public class SignupDto {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public void setAvatarUrl(String avatarUrl) {
+        this.avatarUrl = avatarUrl;
     }
 }
