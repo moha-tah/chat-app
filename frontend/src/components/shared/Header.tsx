@@ -56,7 +56,7 @@ export default function Header() {
                   {user.avatarUrl ? (
                       <img
                           src={`${BACKEND_URL}${user.avatarUrl}`}
-                          alt={`${user.firstName} ${user.lastName}`}
+                          alt="Photo de profil"
                           className="w-8 h-8 rounded-full object-cover"
                       />
                   ) : (
