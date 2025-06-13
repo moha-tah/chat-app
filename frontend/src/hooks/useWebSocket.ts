@@ -18,6 +18,9 @@ export interface WebSocketMessage {
   type: WebSocketMessageType;
   message: string;
   userId?: number;
+  username?: string;
+  avatarUrl?: string;
+  date?: Date;
   chatId?: number;
 }
 
@@ -25,6 +28,8 @@ export const useWebSocket = (chatId: number | null) => {
   const [messages, setMessages] = useState<WebSocketMessage[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const webSocketRef = useRef<WebSocket | null>(null);
+
+  const user = JSON.parse(localStorage.getItem("user") || "{}") as User;
 
   useEffect(() => {
     if (!chatId) {
@@ -94,6 +99,11 @@ export const useWebSocket = (chatId: number | null) => {
       const messageToSend = {
         type: "CHAT_MESSAGE",
         message: messageText,
+        userId: user.id,
+        username: user.firstName + " " + user.lastName,
+        avatarUrl: user.avatarUrl,
+        date: new Date(),
+        chatId: chatId,
       };
       webSocketRef.current.send(JSON.stringify(messageToSend));
     } else {

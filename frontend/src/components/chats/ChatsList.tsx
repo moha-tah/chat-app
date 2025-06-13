@@ -50,7 +50,7 @@ const ChatsList: React.FC<ChatsListProps> = ({
   }, [chats, showClosedChats]);
 
   return (
-    <div className="w-1/4 bg-slate-700/50 border-r border-slate-600 flex flex-col">
+    <div className="w-1/4 bg-slate-700/50 border-r border-slate-600 flex flex-col max-h-[calc(100vh-85px)]">
       <div className="p-4 border-b border-slate-600">
         <h1 className="text-xl font-semibold text-slate-100 mb-4">Mes chats</h1>
         <CreateChat onCreateChat={onCreateChat} />

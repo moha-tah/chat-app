@@ -144,7 +144,7 @@ const CreateChat: React.FC<CreateChatProps> = ({ onCreateChat }) => {
                 <FormItem>
                   <FormLabel>Durée (minutes)</FormLabel>
                   <FormControl>
-                    <Input type="number" placeholder="60" {...field} />
+                    <Input type="number" {...field} min={5} max={1440} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

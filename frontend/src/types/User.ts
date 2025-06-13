@@ -7,6 +7,7 @@ export interface User {
   lastName: string;
   active: boolean;
   admin: boolean;
+  avatarUrl?: string;
   invitations: unknown[];
   createdChats: Chat[];
 }
