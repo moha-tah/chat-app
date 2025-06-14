@@ -17,6 +17,7 @@ import com.sr03.chat_app.models.Invitation;
 import com.sr03.chat_app.repositories.ChatRepository;
 import com.sr03.chat_app.repositories.InvitationRepository;
 import com.sr03.chat_app.repositories.UserRepository;
+import com.sr03.chat_app.dtos.ParticipantDto;
 
 import java.io.IOException;
 import java.net.URI;
@@ -32,6 +33,9 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
     // Map to store sessions per chat ID
     private final Map<Integer, List<WebSocketSession>> chatSessions = new ConcurrentHashMap<>();
+
+    // Map to store connected users per chat ID
+    private final Map<Integer, List<User>> connectedUsersPerChat = new ConcurrentHashMap<>();
 
     // Map to store message history per chat ID
     private final Map<Integer, List<MessageSocket>> messageHistoryPerChat = new ConcurrentHashMap<>();
@@ -91,7 +95,7 @@ public class WebSocketHandler extends TextWebSocketHandler {
         }
 
         receivedMessage.setUserId(authenticatedUsers.get(session.getId()));
-        receivedMessage.setChatId(chatId); // Ensure chat ID is set correctly for internal use
+        receivedMessage.setChatId(chatId);
 
         logger.info("Message received from user " + receivedMessage.getUserId() + " in chat " + chatId + ": "
                 + receivedMessage.getMessage());
@@ -153,6 +157,8 @@ public class WebSocketHandler extends TextWebSocketHandler {
                 + session.getId() + " in chat " + chatId);
         authenticatedUsers.put(session.getId(), userId);
 
+        connectedUsersPerChat.computeIfAbsent(chatId, k -> new ArrayList<>()).add(user);
+
         session.sendMessage(new TextMessage(
                 mapper.writeValueAsString(new SimplifiedMessageSocket(
                         "Bienvenue dans le chat " + chatId + "!",
@@ -168,9 +174,11 @@ public class WebSocketHandler extends TextWebSocketHandler {
 
         // Broadcast join message
         broadcastToChat(chatId, mapper.writeValueAsString(new SimplifiedMessageSocket(
-                "L'utilisateur " + userId + " a rejoint le chat.",
+                user.getFirstName() + " " + user.getLastName() + " a rejoint le chat.",
                 "USER_JOIN",
                 userId)));
+
+        broadcastConnectedUsersList(chatId);
     }
 
     private void handleChatMessage(WebSocketSession session, MessageSocket chatMessage) throws IOException {
@@ -222,13 +230,32 @@ public class WebSocketHandler extends TextWebSocketHandler {
             removeChatSession(chatId, session);
 
             if (userId != null) {
+                User user = userRepository.findById(userId).orElse(null);
+                if (user != null) {
+                    List<User> connectedUsers = connectedUsersPerChat.get(chatId);
+                    if (connectedUsers != null) {
+                        connectedUsers.removeIf(u -> u.getId() == userId);
+                        if (connectedUsers.isEmpty()) {
+                            connectedUsersPerChat.remove(chatId);
+                        }
+                    }
+                }
+                String userName = (user != null)
+                        ? user.getFirstName() + " " + user.getLastName()
+                        : "L'utilisateur " + userId;
+
                 logger.info(
-                        "L'utilisateur " + userId + " (session: " + session.getId() + ") a quitté le chat " + chatId);
+                        userName + " (session: " + session.getId() + ") a quitté le chat " + chatId);
                 try {
+                    String departureMessage = (user != null)
+                            ? user.getFirstName() + " " + user.getLastName() + " a quitté le chat."
+                            : "L'utilisateur " + userId + " a quitté le chat.";
+
                     broadcastToChat(chatId, new ObjectMapper().writeValueAsString(new SimplifiedMessageSocket(
-                            "L'utilisateur " + userId + " a quitté le chat.",
+                            departureMessage,
                             "USER_LEAVE",
                             userId)));
+                    broadcastConnectedUsersList(chatId);
                 } catch (IOException e) {
                     logger.error("Error broadcasting departure message for user " + userId + " in chat " + chatId, e);
                 }
@@ -278,5 +305,20 @@ public class WebSocketHandler extends TextWebSocketHandler {
             logger.error("Error extracting chat ID from WebSocket URI", e);
             return null;
         }
+    }
+
+    private void broadcastConnectedUsersList(Integer chatId) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        List<User> users = connectedUsersPerChat.getOrDefault(chatId, new ArrayList<>());
+        List<ParticipantDto> userList = new ArrayList<>();
+        for (User user : users) {
+            userList.add(ParticipantDto.fromUser(user));
+        }
+
+        Map<String, Object> message = new ConcurrentHashMap<>();
+        message.put("type", "CONNECTED_USERS_LIST");
+        message.put("users", userList);
+
+        broadcastToChat(chatId, mapper.writeValueAsString(message));
     }
 }

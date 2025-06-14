@@ -1,24 +1,32 @@
 package com.sr03.chat_app.dtos;
 
+import com.sr03.chat_app.models.User;
+
 public class ParticipantDto {
-    private int id;
+    private Integer id;
     private String firstName;
     private String lastName;
     private String avatarUrl;
 
-    public ParticipantDto(int id, String firstName, String lastName, String avatarUrl) {
+    public ParticipantDto() {
+    }
+
+    public ParticipantDto(Integer id, String firstName, String lastName, String avatarUrl) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.avatarUrl = avatarUrl;
     }
 
-    // Getters and setters
-    public int getId() {
+    public static ParticipantDto fromUser(User user) {
+        return new ParticipantDto(user.getId(), user.getFirstName(), user.getLastName(), user.getAvatarUrl());
+    }
+
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
