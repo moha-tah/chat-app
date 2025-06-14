@@ -3,8 +3,7 @@ package com.sr03.chat_app.models;
 import java.time.LocalDateTime;
 import java.util.*;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 
@@ -28,12 +27,11 @@ public class Chat {
     @Column(name = "duration", nullable = false)
     private int duration; // in minutes
 
-    @JsonBackReference
     @ManyToOne
     @JoinColumn(name = "creator_id", nullable = false)
     private User creator;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "chat", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Invitation> invitations = new HashSet<>();
 

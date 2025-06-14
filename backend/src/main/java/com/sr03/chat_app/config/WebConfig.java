@@ -23,7 +23,7 @@ public class WebConfig {
             }
 
             @Override
-            public void addResourceHandlers(ResourceHandlerRegistry registry) {
+            public void addResourceHandlers(@NonNull ResourceHandlerRegistry registry) {
                 registry
                         .addResourceHandler("/uploads/**")
                         .addResourceLocations("file:uploads/");

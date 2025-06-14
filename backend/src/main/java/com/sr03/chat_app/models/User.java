@@ -1,10 +1,11 @@
 package com.sr03.chat_app.models;
+
 import jakarta.persistence.*;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -22,6 +23,7 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
+    @JsonIgnore
     @Column(name = "password_hash", nullable = false)
     private String passwordHash;
 
@@ -34,11 +36,14 @@ public class User {
     @Column(name = "is_admin", nullable = false)
     private boolean isAdmin = false;
 
-    @JsonManagedReference
+    @Column(name = "avatar_url", nullable = true)
+    private String avatarUrl;
+
+    @JsonIgnore
     @OneToMany(mappedBy = "creator")
     private Set<Chat> createdChats = new HashSet<>();
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Invitation> invitations = new HashSet<>();
 
@@ -47,10 +52,9 @@ public class User {
     public User() {
         // No-arg constructor needed by JPA
     }
-    @Column(name = "avatar_url"  , nullable = true)
-    private String avatarUrl;
 
-    public User(String lastName, String firstName, String email, String passwordHash, String passwordSalt, boolean isAdmin) {
+    public User(String lastName, String firstName, String email, String passwordHash, String passwordSalt,
+            boolean isAdmin) {
         this.lastName = lastName;
         this.firstName = firstName;
         this.email = email;

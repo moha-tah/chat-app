@@ -1,4 +1,5 @@
 package com.sr03.chat_app.controllers;
+
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.services.UserService;
 import com.sr03.chat_app.dtos.LoginDto;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.sr03.chat_app.dtos.SignupDto;
 import org.springframework.web.multipart.MultipartFile;
-
 
 @RestController
 @RequestMapping("users")
@@ -40,9 +40,11 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    public User signup(@RequestPart("userData") SignupDto signupDto, @RequestPart(value = "avatar", required = false) MultipartFile avatarFile) {
+    public User signup(@RequestPart("userData") SignupDto signupDto,
+            @RequestPart(value = "avatar", required = false) MultipartFile avatarFile) {
         return userService.signupUser(signupDto, avatarFile);
     }
+
     @GetMapping("/{id}")
     public User getUserById(@PathVariable int id) {
         return userService.getUserById(id);
@@ -89,9 +91,6 @@ public class UserController {
             // 2. Extract token (assuming it's the user's email)
             String token = authHeader.substring(7).trim();
 
-            // 3. Debug logging (remove in production)
-            System.out.println("Extracted token: " + token);
-
             // 4. Get user by email
             User user = userService.getUserByEmail(token);
 
@@ -105,6 +104,5 @@ public class UserController {
             return ResponseEntity.badRequest().build();
         }
     }
-
 
 }
