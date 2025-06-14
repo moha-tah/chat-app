@@ -59,7 +59,7 @@ interface CreateChatProps {
 const CreateChat: React.FC<CreateChatProps> = ({ onCreateChat }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}") as User;
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}") as User;
 
   const form = useForm<FormData>({
     resolver: zodResolver(formSchema),

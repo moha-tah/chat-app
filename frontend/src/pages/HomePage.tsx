@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import Header from "../components/shared/Header";
 import { Link } from "react-router-dom";
+import { BACKEND_URL } from "@/lib/constants";
 
 function HomePage() {
   return (
@@ -19,9 +20,15 @@ function HomePage() {
             size="lg"
             className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-6 text-lg"
           >
-            <Link to={localStorage.getItem("user") ? "/chats" : "/login"}>
+            <Link to={sessionStorage.getItem("user") ? "/chats" : "/login"}>
               Commencer
             </Link>
+          </Button>
+          <Button
+            size="lg"
+            className="bg-white text-blue-600 px-10 py-6 text-lg hover:bg-gray-200 hover:text-blue-600"
+          >
+            <Link to={`${BACKEND_URL}/admin/login`}>Administrateur</Link>
           </Button>
         </div>
       </main>

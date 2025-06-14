@@ -29,14 +29,14 @@ export const useWebSocket = (chatId: number | null) => {
   const [isConnected, setIsConnected] = useState(false);
   const webSocketRef = useRef<WebSocket | null>(null);
 
-  const user = JSON.parse(localStorage.getItem("user") || "{}") as User;
+  const user = JSON.parse(sessionStorage.getItem("user") || "{}") as User;
 
   useEffect(() => {
     if (!chatId) {
       return;
     }
 
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
       toast.error("Utilisateur non authentifié.");
       return;

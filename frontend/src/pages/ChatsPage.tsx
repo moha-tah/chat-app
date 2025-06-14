@@ -9,7 +9,7 @@ import { useWebSocket } from "@/hooks";
 
 const ChatsPage: React.FC = () => {
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = sessionStorage.getItem("user");
     if (!storedUser) {
       window.location.href = "/";
       toast.error("Veuillez vous connecter pour accéder aux chats.");
