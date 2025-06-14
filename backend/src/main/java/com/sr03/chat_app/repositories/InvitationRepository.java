@@ -1,4 +1,5 @@
 package com.sr03.chat_app.repositories;
+
 import com.sr03.chat_app.models.Chat;
 import com.sr03.chat_app.models.Invitation;
 import com.sr03.chat_app.models.User;
@@ -11,30 +12,6 @@ public interface InvitationRepository extends JpaRepository<Invitation, Integer>
     List<Invitation> findByUser(User user);
 
     List<Invitation> findByChat(Chat chat);
+
+    void deleteByChatIdAndUserId(Integer chatId, Integer userId);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

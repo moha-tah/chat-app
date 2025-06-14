@@ -2,6 +2,7 @@ package com.sr03.chat_app.controllers;
 
 import com.sr03.chat_app.dtos.InvitationDto;
 import com.sr03.chat_app.models.Invitation;
+import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.services.InvitationService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,5 +40,10 @@ public class InvitationController {
     @GetMapping("/chats/{id}")
     public List<Invitation> getInvitationsByChatId(@PathVariable int id) {
         return invitationService.getInvitationsByChatId(id);
+    }
+
+    @GetMapping("/chats/{chatId}/users")
+    public List<User> getInvitedUsersByChatId(@PathVariable int chatId) {
+        return invitationService.getInvitedUsersByChatId(chatId);
     }
 }

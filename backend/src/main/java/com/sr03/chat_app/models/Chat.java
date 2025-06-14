@@ -91,9 +91,12 @@ public class Chat {
         return invitations;
     }
 
+    public void setInvitations(Set<Invitation> invitations) {
+        this.invitations = invitations;
+    }
+
     public void addInvitation(User user) {
-        Invitation invitation = new Invitation(this, user); // create an Invitation
+        Invitation invitation = new Invitation(this, user);
         invitations.add(invitation);
-        user.getInvitations().add(invitation); // Add to the user's invitations too
     }
 }

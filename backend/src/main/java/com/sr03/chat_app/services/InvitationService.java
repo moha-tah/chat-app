@@ -17,7 +17,9 @@ import java.util.List;
 public class InvitationService {
     @Autowired
     private InvitationRepository invitationRepository;
+    @Autowired
     private UserRepository userRepository;
+    @Autowired
     private ChatRepository chatRepository;
 
     public Invitation createInvitation(InvitationDto invitationDto) {
@@ -47,6 +49,12 @@ public class InvitationService {
     public List<Invitation> getInvitationsByChatId(int chatId) {
         Chat chat = getChatOrThrow(chatId);
         return invitationRepository.findByChat(chat);
+    }
+
+    public List<User> getInvitedUsersByChatId(int chatId) {
+        Chat chat = getChatOrThrow(chatId);
+        List<Invitation> invitations = invitationRepository.findByChat(chat);
+        return invitations.stream().map(Invitation::getUser).toList();
     }
 
     private User getUserOrThrow(int userId) {

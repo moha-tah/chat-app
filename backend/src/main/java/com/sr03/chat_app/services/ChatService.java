@@ -2,12 +2,16 @@ package com.sr03.chat_app.services;
 
 import com.sr03.chat_app.dtos.ChatDto;
 import com.sr03.chat_app.models.Chat;
+import com.sr03.chat_app.models.Invitation;
 import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.repositories.ChatRepository;
+import com.sr03.chat_app.repositories.InvitationRepository;
 import com.sr03.chat_app.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -18,6 +22,10 @@ public class ChatService {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private InvitationRepository invitationRepository;
+
+    @Transactional
     public Chat createChat(ChatDto chatDto) {
         List<Integer> invitedUserIds = chatDto.getInvitedUserIds();
         if (invitedUserIds == null || invitedUserIds.isEmpty()) {
@@ -48,22 +56,51 @@ public class ChatService {
         return chatRepository.findAll();
     }
 
-    public void deleteChat(Integer id) {
-        if (!chatRepository.existsById(id)) {
-            throw new RuntimeException("Chat non trouvé avec l'id: " + id);
+    @Transactional
+    public void deleteChat(Integer id, Integer userId) {
+        Chat chat = chatRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Chat non trouvé avec l'id: " + id));
+
+        if (chat.getCreator().getId() != userId) {
+            throw new RuntimeException("Seul le créateur peut supprimer ce chat");
         }
         chatRepository.deleteById(id);
     }
 
-    public Chat updateChat(Integer id, ChatDto chatDto) {
+    @Transactional
+    public Chat updateChat(Integer id, ChatDto chatDto, Integer userId) {
         Chat chatToUpdate = chatRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Chat non trouvé avec l'id: " + id));
+
+        if (chatToUpdate.getCreator().getId() != userId) {
+            throw new RuntimeException("Seul le créateur peut modifier ce chat");
+        }
 
         chatToUpdate.setTitle(chatDto.getTitle());
         chatToUpdate.setDescription(chatDto.getDescription());
         chatToUpdate.setDate(chatDto.getDate());
         chatToUpdate.setDuration(chatDto.getDuration());
 
+        List<Invitation> currentInvitations = new ArrayList<>(chatToUpdate.getInvitations());
+        for (Invitation invitation : currentInvitations) {
+            invitation.getUser().getInvitations().remove(invitation);
+        }
+        chatToUpdate.getInvitations().clear();
+
+        chatRepository.flush();
+
+        for (Integer invitedUserId : chatDto.getInvitedUserIds()) {
+            User invitedUser = userRepository.findById(invitedUserId)
+                    .orElseThrow(
+                            () -> new RuntimeException("Utilisateur invité non trouvé avec l'id: " + invitedUserId));
+            chatToUpdate.addInvitation(invitedUser);
+        }
+
         return chatRepository.save(chatToUpdate);
+    }
+
+    @Transactional
+    public void leaveChat(Integer chatId, Integer userId) {
+        invitationRepository.deleteByChatIdAndUserId(chatId, userId);
     }
 }

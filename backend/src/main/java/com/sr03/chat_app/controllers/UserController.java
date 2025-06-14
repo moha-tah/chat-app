@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.sr03.chat_app.dtos.SignupDto;
 import org.springframework.web.multipart.MultipartFile;
+import com.sr03.chat_app.models.Chat;
 
 @RestController
 @RequestMapping("users")
@@ -103,6 +104,11 @@ public class UserController {
             // 5. Better error handling
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @GetMapping("/{userId}/chats")
+    public List<Chat> getUserChats(@PathVariable Integer userId) {
+        return userService.getChatsForUser(userId);
     }
 
 }

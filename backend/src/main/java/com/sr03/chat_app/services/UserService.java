@@ -1,4 +1,5 @@
 package com.sr03.chat_app.services;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -8,7 +9,11 @@ import com.sr03.chat_app.dtos.SignupDto;
 import com.sr03.chat_app.dtos.LoginDto;
 import com.sr03.chat_app.dtos.UserDto;
 import com.sr03.chat_app.models.User;
+import com.sr03.chat_app.models.Chat;
+import com.sr03.chat_app.models.Invitation;
 import com.sr03.chat_app.repositories.UserRepository;
+import com.sr03.chat_app.repositories.ChatRepository;
+import com.sr03.chat_app.repositories.InvitationRepository;
 import com.sr03.chat_app.security.RequiresAdmin;
 import com.sr03.chat_app.utils.Utils;
 import com.sr03.chat_app.exceptions.DuplicateEmailException;
@@ -22,6 +27,10 @@ import java.nio.file.*;
 public class UserService {
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ChatRepository chatRepository;
+    @Autowired
+    private InvitationRepository invitationRepository;
 
     @RequiresAdmin
     public User addUser(UserDto createUserDto) {
@@ -40,8 +49,7 @@ public class UserService {
                 createUserDto.getEmail(),
                 passwordHash,
                 passwordSalt,
-                createUserDto.isAdmin()
-        );
+                createUserDto.isAdmin());
 
         return userRepository.save(user);
     }
@@ -62,8 +70,7 @@ public class UserService {
                 dto.getEmail(),
                 hash,
                 salt,
-                false
-        );
+                false);
 
         user.setActive(false);
         // save user to get its id
@@ -125,7 +132,6 @@ public class UserService {
         user.setEmail(userDto.getEmail());
         user.setActive(userDto.isActive());
         user.setAdmin(userDto.isAdmin());
-
 
         if (userDto.getPassword() != null && !userDto.getPassword().isEmpty()) {
             checkPasswordStrength(userDto.getPassword());
@@ -195,6 +201,22 @@ public class UserService {
         userRepository.save(user);
 
         return avatarUrl;
+    }
+
+    public List<Chat> getChatsForUser(Integer userId) {
+        User user = getUserOrThrow(userId);
+        List<Chat> createdChats = chatRepository.findByCreatorId(userId);
+        List<Invitation> invitations = invitationRepository.findByUser(user);
+
+        List<Chat> invitedChats = invitations.stream()
+                .map(Invitation::getChat)
+                .toList();
+
+        // Combine and remove duplicates
+        java.util.Set<Chat> allChats = new java.util.HashSet<>(createdChats);
+        allChats.addAll(invitedChats);
+
+        return new java.util.ArrayList<>(allChats);
     }
 
 }

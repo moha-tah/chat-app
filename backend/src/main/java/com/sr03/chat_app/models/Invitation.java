@@ -1,7 +1,5 @@
 package com.sr03.chat_app.models;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import jakarta.persistence.*;
 
 @Entity
