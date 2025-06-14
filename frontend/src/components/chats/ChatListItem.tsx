@@ -6,7 +6,14 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { MoreHorizontal, Info, Pencil, Trash2, LogOut } from "lucide-react";
+import {
+  MoreHorizontal,
+  Info,
+  Pencil,
+  Trash2,
+  LogOut,
+  Crown,
+} from "lucide-react";
 import type { User } from "@/types/User";
 import ChatInfoModal from "./ChatInfoModal";
 
@@ -68,7 +75,10 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
         } ${isSelected && status === "Ouvert" ? "bg-slate-600" : ""}`}
       >
         <div className="mr-4 w-full">
-          <p className="font-semibold text-slate-100">{chat.title}</p>
+          <div className="flex items-center">
+            <p className="font-semibold text-slate-100">{chat.title}</p>
+            {isCreator && <Crown className="ml-2 h-4 w-4 text-yellow-400" />}
+          </div>
           <span
             className={`px-2 py-1 text-xs font-semibold rounded-full text-white ${getStatusColor()}`}
           >

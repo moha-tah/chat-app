@@ -46,7 +46,7 @@ const MessageItem: React.FC<MessageItemProps> = ({ message }) => {
               className="w-8 h-8 rounded-full border-2 border-slate-500 mr-3 flex-shrink-0 object-cover mt-7"
             />
           ) : (
-            <UserIcon className="w-8 h-8 mr-3 mt-7" />
+            <UserIcon className="w-8 h-8 rounded-full border-2 border-slate-500 mr-3 mt-7" />
           ))}
         <div
           className={cn(

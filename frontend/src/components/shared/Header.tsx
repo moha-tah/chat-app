@@ -12,7 +12,6 @@ interface User {
 }
 
 export default function Header() {
-  // Start with minimal user info from sessionStorage to show name ASAP
   const [user, setUser] = useState<User | null>(() => {
     const storedUser = sessionStorage.getItem("user");
     if (storedUser) {
@@ -25,12 +24,12 @@ export default function Header() {
   });
 
   useEffect(() => {
-    const userEmail = sessionStorage.getItem("userEmail"); // Get the email
+    const userEmail = sessionStorage.getItem("userEmail");
     if (userEmail) {
       console.log(`Fetching user data for: ${userEmail}`);
       fetch(`${BACKEND_URL}/users/me`, {
         headers: {
-          Authorization: `Bearer ${userEmail}`, // Send the email, not a token
+          Authorization: `Bearer ${userEmail}`,
         },
       })
         .then((res) => {
@@ -57,10 +56,10 @@ export default function Header() {
                 <img
                   src={`${BACKEND_URL}${user.avatarUrl}`}
                   alt="Photo de profil"
-                  className="w-8 h-8 rounded-full object-cover"
+                  className="w-8 h-8 rounded-full border-2 border-slate-500 mr-1 flex-shrink-0 object-cover"
                 />
               ) : (
-                <UserIcon className="w-6 h-6" />
+                <UserIcon className="w-8 h-8 rounded-full border-2 border-slate-500 mr-1" />
               )}
               <span className="text-sm mx-2">
                 {user.firstName} {user.lastName}

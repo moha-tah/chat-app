@@ -29,7 +29,7 @@ const ChatArea: React.FC<ChatAreaProps> = ({
     <div className="flex-1 flex flex-col bg-slate-800">
       <ChatHeader chat={selectedChat} />
       <MessagesArea messages={messages} />
-      <MessageInput onSendMessage={onSendMessage} />
+      <MessageInput onSendMessage={onSendMessage} chat={selectedChat} />
     </div>
   );
 };
