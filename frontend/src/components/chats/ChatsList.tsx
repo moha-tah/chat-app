@@ -4,12 +4,19 @@ import ChatListItem from "./ChatListItem";
 import CreateChat, { type ChatData } from "./CreateChat";
 import { Switch } from "../ui/switch";
 import { Label } from "../ui/label";
+import type { User } from "@/types/User";
 
 interface ChatsListProps {
   chats: Chat[];
   selectedChat: Chat | null;
   onSelectChat: (chat: Chat) => void;
-  onCreateChat: (chatData: ChatData) => void;
+  onCreateChat: (
+    chatData: Omit<ChatData, "creatorId"> & { creatorId: number }
+  ) => void;
+  currentUser: User;
+  onEditChat: (chat: Chat) => void;
+  onDeleteChat: (chatId: number) => void;
+  onLeaveChat: (chatId: number) => void;
 }
 
 type ChatStatus = "open" | "upcoming" | "closed";
@@ -39,6 +46,10 @@ const ChatsList: React.FC<ChatsListProps> = ({
   selectedChat,
   onSelectChat,
   onCreateChat,
+  currentUser,
+  onEditChat,
+  onDeleteChat,
+  onLeaveChat,
 }) => {
   const [showClosedChats, setShowClosedChats] = useState(false);
 
@@ -73,6 +84,10 @@ const ChatsList: React.FC<ChatsListProps> = ({
               chat={chat}
               isSelected={selectedChat?.id === chat.id}
               onSelect={onSelectChat}
+              currentUser={currentUser}
+              onEdit={onEditChat}
+              onDelete={onDeleteChat}
+              onLeave={onLeaveChat}
             />
           );
         })}

@@ -1,5 +1,13 @@
 import React from "react";
 import type { Chat } from "../../types/Chat";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { MoreHorizontal } from "lucide-react";
+import type { User } from "@/types/User";
 
 type ChatStatus = "À venir" | "Ouvert" | "Fermé";
 
@@ -7,12 +15,20 @@ interface ChatListItemProps {
   chat: Chat;
   isSelected: boolean;
   onSelect: (chat: Chat) => void;
+  currentUser: User;
+  onEdit: (chat: Chat) => void;
+  onDelete: (chatId: number) => void;
+  onLeave: (chatId: number) => void;
 }
 
 const ChatListItem: React.FC<ChatListItemProps> = ({
   chat,
   isSelected,
   onSelect,
+  currentUser,
+  onEdit,
+  onDelete,
+  onLeave,
 }) => {
   const getChatStatus = (chatDate: Date, duration: number): ChatStatus => {
     const now = new Date();
@@ -36,10 +52,12 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
     return "bg-gray-500"; // À venir
   };
 
+  const isCreator = currentUser.id === chat.creator.id;
+
   return (
     <div
       onClick={() => status === "Ouvert" && onSelect(chat)}
-      className={`p-4 flex justify-between items-center ${
+      className={`p-4 flex justify-between items-center group ${
         status === "Ouvert"
           ? "cursor-pointer hover:bg-slate-600"
           : "cursor-not-allowed opacity-60"
@@ -56,6 +74,38 @@ const ChatListItem: React.FC<ChatListItemProps> = ({
           {chat.description}
         </p>
       </div>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <button className="p-1 rounded-full hover:bg-slate-700 opacity-100 group-hover:opacity-100 transition-opacity">
+            <MoreHorizontal className="h-5 w-5 text-slate-400" />
+          </button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent
+          onClick={(e) => e.stopPropagation()}
+          className="bg-slate-800 border-slate-700 text-white"
+        >
+          {isCreator ? (
+            <>
+              <DropdownMenuItem onClick={() => onEdit(chat)}>
+                Modifier
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                variant="destructive"
+                onClick={() => onDelete(chat.id)}
+              >
+                Supprimer
+              </DropdownMenuItem>
+            </>
+          ) : (
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() => onLeave(chat.id)}
+            >
+              Quitter le chat
+            </DropdownMenuItem>
+          )}
+        </DropdownMenuContent>
+      </DropdownMenu>
     </div>
   );
 };

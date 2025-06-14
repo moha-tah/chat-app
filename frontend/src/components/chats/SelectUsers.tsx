@@ -38,12 +38,17 @@ const SelectUsers: React.FC<SelectUsersProps> = ({
       setIsLoading(true);
       setError(null);
       try {
+        const storedUserString = sessionStorage.getItem("user");
+        const currentUser = storedUserString
+          ? (JSON.parse(storedUserString) as User)
+          : null;
+
         const response = await fetch(`${BACKEND_URL}/users/active`);
         if (!response.ok) {
           throw new Error("Failed to fetch users");
         }
         const data: User[] = await response.json();
-        setAllUsers(data);
+        setAllUsers(data.filter((user) => user.id !== currentUser?.id));
       } catch (err) {
         setError(
           err instanceof Error ? err.message : "An unknown error occurred"
