@@ -7,4 +7,5 @@ export interface Chat {
   date: Date;
   duration: number;
   creator: User;
+  users: User[];
 }

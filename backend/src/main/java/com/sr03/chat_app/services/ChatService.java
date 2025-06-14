@@ -13,6 +13,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.HashSet;
 
 @Service
 public class ChatService {
@@ -102,5 +105,22 @@ public class ChatService {
     @Transactional
     public void leaveChat(Integer chatId, Integer userId) {
         invitationRepository.deleteByChatIdAndUserId(chatId, userId);
+    }
+
+    @Transactional(readOnly = true)
+    public Set<User> getChatParticipants(Integer chatId) {
+        Chat chat = chatRepository.findById(chatId)
+                .orElseThrow(() -> new RuntimeException("Chat non trouvé avec l'id: " + chatId));
+
+        Set<User> participants = new HashSet<>();
+        participants.add(chat.getCreator());
+
+        Set<User> invitedUsers = chat.getInvitations().stream()
+                .map(Invitation::getUser)
+                .collect(Collectors.toSet());
+
+        participants.addAll(invitedUsers);
+
+        return participants;
     }
 }

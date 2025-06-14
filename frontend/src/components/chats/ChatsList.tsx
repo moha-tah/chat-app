@@ -72,7 +72,7 @@ const ChatsList: React.FC<ChatsListProps> = ({
             onCheckedChange={setShowClosedChats}
           />
           <Label htmlFor="show-closed-chats" className="text-slate-300">
-            Afficher les chats fermés
+            Afficher les chats passés
           </Label>
         </div>
       </div>

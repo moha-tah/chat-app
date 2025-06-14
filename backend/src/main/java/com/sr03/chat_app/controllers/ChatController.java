@@ -1,12 +1,16 @@
 package com.sr03.chat_app.controllers;
 
 import com.sr03.chat_app.dtos.ChatDto;
+import com.sr03.chat_app.dtos.ParticipantDto;
 import com.sr03.chat_app.models.Chat;
+import com.sr03.chat_app.models.User;
 import com.sr03.chat_app.services.ChatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("chats")
@@ -41,5 +45,22 @@ public class ChatController {
     public ResponseEntity<Void> leaveChat(@PathVariable Integer chatId, @PathVariable Integer userId) {
         chatService.leaveChat(chatId, userId);
         return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/{id}/users")
+    public ResponseEntity<Set<ParticipantDto>> getChatParticipants(@PathVariable Integer id) {
+        Set<User> participants = chatService.getChatParticipants(id);
+        Set<ParticipantDto> participantDtos = participants.stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toSet());
+        return ResponseEntity.ok(participantDtos);
+    }
+
+    private ParticipantDto convertToDto(User user) {
+        return new ParticipantDto(
+                user.getId(),
+                user.getFirstName(),
+                user.getLastName(),
+                user.getAvatarUrl());
     }
 }
