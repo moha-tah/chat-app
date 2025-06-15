@@ -2,10 +2,10 @@
 
 ## Description du projet
 
-Ce projet consiste en une application de salon de discussion (chat) divisée en deux parties :
+Ce projet consiste en une application de chat divisée en deux parties :
 
 - **Partie 1 : Application Web**  
-  Une interface web pour gérer les utilisateurs, planifier, éditer et afficher les salons de discussion.  
+  Une interface web pour gérer les utilisateurs, planifier, éditer et afficher les chats.  
   Technologies utilisées :  
   - Backend : Spring Boot (Java) avec JPA/Hibernate pour la gestion des données  
   - Frontend utilisateur : React (single-page app) avec appels API REST vers le backend  
