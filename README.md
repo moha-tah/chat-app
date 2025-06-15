@@ -17,6 +17,8 @@ Ce projet consiste en une application de chat divisée en deux parties :
 ---
 
 ## Architecture générale
+![DataBase](https://github.com/user-attachments/assets/ceaa280a-2a41-4385-9c01-261c62bf75f1)
+
 
 ```
 [Frontend React (utilisateur)]
