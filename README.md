@@ -59,7 +59,7 @@ Ce projet consiste en une application de salon de discussion (chat) divisée en 
 ```bash
 git clone 
 cd backend
-./mvnw spring-boot:run
+mvnw spring-boot:run
 ```
 
 ### Lancement du frontend (React - utilisateur)
