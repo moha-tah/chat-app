@@ -28,19 +28,19 @@ const ChatsPage: React.FC = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const { messages, setMessages, sendMessage } = useWebSocket(
-    selectedChat?.id ?? null
+      selectedChat?.id ?? null
   );
 
   useEffect(() => {
     const fetchChats = async () => {
       if (!currentUser) return;
       const response = await fetch(
-        `${BACKEND_URL}/users/${currentUser.id}/chats`
+          `${BACKEND_URL}/users/${currentUser.id}/chats`
       );
 
       if (!response.ok) {
         toast.error(
-          "Erreur pour récupérer les chats : " + (await response.text())
+            "Erreur pour récupérer les chats : " + (await response.text())
         );
         return;
       }
@@ -58,7 +58,7 @@ const ChatsPage: React.FC = () => {
   };
 
   const handleCreateChat = async (
-    chatData: Omit<ChatData, "creatorId"> & { creatorId: number }
+      chatData: Omit<ChatData, "creatorId"> & { creatorId: number }
   ) => {
     try {
       const response = await fetch(`${BACKEND_URL}/chats`, {
@@ -102,14 +102,14 @@ const ChatsPage: React.FC = () => {
 
       if (!response.ok) {
         toast.error(
-          "Erreur pour mettre à jour le chat : " + (await response.text())
+            "Erreur pour mettre à jour le chat : " + (await response.text())
         );
         return;
       }
 
       const updatedChat = await response.json();
       setChats((prevChats) =>
-        prevChats.map((chat) => (chat.id === chatId ? updatedChat : chat))
+          prevChats.map((chat) => (chat.id === chatId ? updatedChat : chat))
       );
       if (selectedChat?.id === chatId) {
         setSelectedChat(updatedChat);
@@ -134,7 +134,7 @@ const ChatsPage: React.FC = () => {
 
       if (!response.ok) {
         toast.error(
-          "Erreur pour supprimer le chat : " + (await response.text())
+            "Erreur pour supprimer le chat : " + (await response.text())
         );
         return;
       }
@@ -155,13 +155,13 @@ const ChatsPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        `${BACKEND_URL}/chats/${chatId}/users/${currentUser.id}/leave`,
-        {
-          method: "POST",
-          headers: {
-            "X-User-Id": String(currentUser.id),
-          },
-        }
+          `${BACKEND_URL}/chats/${chatId}/users/${currentUser.id}/leave`,
+          {
+            method: "POST",
+            headers: {
+              "X-User-Id": String(currentUser.id),
+            },
+          }
       );
 
       if (!response.ok) {
@@ -180,37 +180,53 @@ const ChatsPage: React.FC = () => {
   };
 
   if (!currentUser) {
-    return null; // or a loading spinner
+    return null;
   }
 
-  return (
-    <div className="flex flex-col min-h-screen bg-slate-800 text-white">
-      <Header />
-      <div className="flex flex-grow overflow-hidden">
-        <ChatsList
-          chats={chats}
-          selectedChat={selectedChat}
-          onSelectChat={handleSelectChat}
-          onCreateChat={handleCreateChat}
-          currentUser={currentUser}
-          onEditChat={handleEditChat}
-          onDeleteChat={handleDeleteChat}
-          onLeaveChat={handleLeaveChat}
-        />
-        <ChatArea
-          selectedChat={selectedChat}
-          messages={messages}
-          onSendMessage={sendMessage}
-        />
-      </div>
-      <EditChat
-        chat={editingChat}
-        isOpen={isEditModalOpen}
-        setIsOpen={setIsEditModalOpen}
-        onUpdateChat={handleUpdateChat}
-      />
-    </div>
-  );
+
+    return (
+        <div className="flex flex-col min-h-screen bg-slate-800 text-white relative">
+            <Header />
+
+            {!currentUser?.active && (
+                <>
+                    <div className="absolute top-[64px] left-0 w-full h-[calc(100%-64px)] backdrop-blur-sm bg-black/50 z-20" />
+
+                    <div className="absolute top-[64px] left-0 w-full z-30 flex justify-center p-4">
+                        <div className="bg-red-600 text-white px-6 py-3 rounded-md shadow-md">
+                            Votre compte est désactivé. Veuillez contacter un administrateur pour l'activer.
+                        </div>
+                    </div>
+                </>
+            )}
+
+            <div className="flex flex-grow overflow-hidden z-10">
+                <ChatsList
+                    chats={chats}
+                    selectedChat={selectedChat}
+                    onSelectChat={handleSelectChat}
+                    onCreateChat={handleCreateChat}
+                    currentUser={currentUser}
+                    onEditChat={handleEditChat}
+                    onDeleteChat={handleDeleteChat}
+                    onLeaveChat={handleLeaveChat}
+                />
+                <ChatArea
+                    selectedChat={selectedChat}
+                    messages={messages}
+                    onSendMessage={sendMessage}
+                />
+            </div>
+
+            <EditChat
+                chat={editingChat}
+                isOpen={isEditModalOpen}
+                setIsOpen={setIsEditModalOpen}
+                onUpdateChat={handleUpdateChat}
+            />
+        </div>
+    );
+
 };
 
 export default ChatsPage;
