@@ -66,6 +66,7 @@ mvnw spring-boot:run
 
 ```bash
 cd frontend
+npm i -g pnpm
 pnpm install
 pnpm dev
 ```
