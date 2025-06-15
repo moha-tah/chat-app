@@ -7,7 +7,7 @@ import jakarta.persistence.*;
 public class Invitation {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     // @JsonBackReference
     @ManyToOne
