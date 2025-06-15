@@ -40,11 +40,11 @@ public class User {
     private String avatarUrl;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "creator")
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.REMOVE)
     private Set<Chat> createdChats = new HashSet<>();
 
     @JsonIgnore
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private Set<Invitation> invitations = new HashSet<>();
 
     // === Constructors ===
