@@ -35,7 +35,7 @@ Ce projet consiste en une application de chat divisée en deux parties :
 
 ## Technologies utilisées
 
-- Java 17+
+- Java 
 - Spring Boot 3.x
 - JPA / Hibernate
 - Thymeleaf / HTML / CSS / JS (interface admin)
