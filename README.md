@@ -1,70 +1,70 @@
 # SR03 - ChatApp
 
-## Description du projet
+## Project Description
 
-Ce projet consiste en une application de chat divisée en deux parties :
+This project consists of a chat application divided into two parts:
 
-- **Partie 1 : Application Web**  
-  Une interface web pour gérer les utilisateurs, planifier, éditer et afficher les chats.  
-  Technologies utilisées :  
-  - Backend : Spring Boot (Java) avec JPA/Hibernate pour la gestion des données  
-  - Frontend utilisateur : React (single-page app) avec appels API REST vers le backend  
-  - **Interface administrateur : pages HTML / Thymeleaf intégrées directement dans l’application Spring Boot** (pas en React)
+- **Part 1: Web Application**  
+  A web interface to manage users, schedule, edit, and display chats.  
+  Technologies used:
 
-- **Partie 2 : Serveur de chat**  
-  Un serveur WebSocket Java pour diffuser les messages en temps réel aux clients connectés à un canal.
+  - Backend: Spring Boot (Java) with JPA/Hibernate for data management
+  - User frontend: React (single-page app) with REST API calls to the backend
+  - **Administrator interface: HTML / Thymeleaf pages integrated directly into the Spring Boot application**
+
+- **Part 2: Chat Server**  
+  A Java WebSocket server to broadcast messages in real-time to clients connected to a channel.
 
 ---
 
-## Architecture générale
-![DataBase](https://github.com/user-attachments/assets/ceaa280a-2a41-4385-9c01-261c62bf75f1)
+## General Architecture
 
+![Database](https://github.com/user-attachments/assets/ceaa280a-2a41-4385-9c01-261c62bf75f1)
 
 ```
-[Frontend React (utilisateur)]
-        ⇅ API REST
-[Backend Spring Boot + WebSocket Server + Interface admin HTML]
+[React Frontend (user)]
+        ⇅ REST API
+[Backend Spring Boot + WebSocket Server + HTML admin interface]
         ⇅
-     [Base de données PostgreSQL]
+     [PostgreSQL Database]
 ```
 
-- Le frontend React communique avec le backend via des API REST.
-- L’interface administrateur est servie par Spring Boot via des pages HTML/Thymeleaf.
-- Le serveur WebSocket est intégré au backend Spring Boot.
-- Les messages ne sont pas persistés : ils sont uniquement diffusés aux utilisateurs connectés.
+- The React frontend communicates with the backend via REST APIs.
+- The admin interface is served by Spring Boot via HTML/Thymeleaf pages.
+- The WebSocket server is integrated into the Spring Boot backend.
+- Messages are not persisted: they are only broadcast to connected users.
 
 ---
 
-## Technologies utilisées
+## Technologies Used
 
-- Java 
+- Java
 - Spring Boot 3.x
 - JPA / Hibernate
-- Thymeleaf / HTML / CSS / JS (interface admin)
-- React 18+ (interface utilisateur)
+- Thymeleaf / HTML / CSS / JS (admin interface)
+- React 18+ (user interface)
 - WebSocket API Java
 - PostgreSQL
-- pnpm (gestionnaire de paquets pour le frontend)
+- pnpm (package manager for the frontend)
 
+## Instructions to run the application
 
-## Instructions pour lancer l’application
+### Prerequisites
 
-### Prérequis
+- Java JDK 17 or higher
+- Maven
+- Node.js + pnpm (`npm install -g pnpm`)
+- PostgreSQL (or another compatible DBMS)
 
-- Java JDK 17 ou plus  
-- Maven  
-- Node.js + pnpm (`npm install -g pnpm`)  
-- PostgreSQL (ou un autre SGBD compatible)  
-
-### Lancement du backend (Spring Boot)
+### Launching the backend (Spring Boot)
 
 ```bash
-git clone 
+git clone
 cd backend
 mvnw spring-boot:run
 ```
 
-### Lancement du frontend (React - utilisateur)
+### Launching the frontend (React)
 
 ```bash
 cd frontend
@@ -73,13 +73,13 @@ pnpm install
 pnpm dev
 ```
 
-## Fonctionnement du serveur WebSocket
+## WebSocket Server Operation
 
-- Le serveur WebSocket est intégré dans le backend.
-- Il est activé automatiquement au lancement de Spring Boot.
-- Les messages sont diffusés uniquement en direct (non enregistrés).
+- The WebSocket server is integrated into the backend.
+- It is activated automatically when Spring Boot starts.
+- Messages are broadcast only live (not saved).
 
-## Auteurs
+## Authors
 
-- Mohamed Tahiri  
+- Mohamed Tahiri
 - Ismat Abou Khachfe
