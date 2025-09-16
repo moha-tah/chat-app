@@ -19,7 +19,8 @@ This project consists of a chat application divided into two parts:
 
 ## General Architecture
 
-![Database](https://github.com/user-attachments/assets/ceaa280a-2a41-4385-9c01-261c62bf75f1)
+<img width="1025" height="636" alt="Database Schema" src="https://github.com/user-attachments/assets/9d69466a-4618-42b9-bc64-ddf9a3c73194" />
+
 
 ```
 [React Frontend (user)]
